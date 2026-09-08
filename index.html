@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KRONOS - Operational Time Intelligence Platform</title>
+  <base target="_top">
 
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cinzel:wght@600;700;900&family=Inter:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
@@ -35,11 +36,7 @@
       --transition-premium: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Inter', sans-serif;
@@ -70,101 +67,21 @@
       border-bottom: 1px solid var(--border-gold);
     }
 
-    .brand-gear-container {
-      position: relative;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    .brand-gear-container { position: relative; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
+    .brand-gear { position: absolute; width: 100%; height: 100%; border: 3px dashed var(--gold-metallic); border-radius: 50%; animation: rotateCog 15s linear infinite; }
+    .brand-gear-center { width: 8px; height: 8px; background-color: var(--electric-blue); border-radius: 50%; box-shadow: 0 0 8px var(--electric-blue); z-index: 2; }
+    .brand-title h1 { font-family: 'Cinzel', serif; font-size: 1.15rem; letter-spacing: 1.5px; color: #fff; text-shadow: 0 0 10px var(--gold-glow); }
+    .brand-title span { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; display: block; }
 
-    .brand-gear {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border: 3px dashed var(--gold-metallic);
-      border-radius: 50%;
-      animation: rotateCog 15s linear infinite;
-    }
+    .nav-menu { list-style: none; padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; flex-grow: 1; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: var(--radius-md); cursor: pointer; color: var(--text-muted); font-weight: 500; font-size: 0.8rem; transition: var(--transition-premium); border-left: 3px solid transparent; }
+    .nav-item:hover { background-color: rgba(255, 255, 255, 0.02); color: var(--text-primary); }
+    .nav-item.active { background: linear-gradient(90deg, rgba(212, 175, 55, 0.08), transparent); color: var(--text-primary); border-left-color: var(--gold-metallic); font-weight: 600; }
 
-    .brand-gear-center {
-      width: 8px;
-      height: 8px;
-      background-color: var(--electric-blue);
-      border-radius: 50%;
-      box-shadow: 0 0 8px var(--electric-blue);
-      z-index: 2;
-    }
+    .sidebar-footer { padding: 16px; border-top: 1px solid var(--border-gold); }
+    .sidebar-footer p { font-size: 0.65rem; color: var(--text-muted); margin-top: 6px; }
 
-    .brand-title h1 {
-      font-family: 'Cinzel', serif;
-      font-size: 1.15rem;
-      letter-spacing: 1.5px;
-      color: #fff;
-      text-shadow: 0 0 10px var(--gold-glow);
-    }
-
-    .brand-title span {
-      font-size: 0.6rem;
-      color: var(--text-muted);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      display: block;
-    }
-
-    .nav-menu {
-      list-style: none;
-      padding: 12px 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      flex-grow: 1;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 12px;
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      color: var(--text-muted);
-      font-weight: 500;
-      font-size: 0.8rem;
-      transition: var(--transition-premium);
-      border-left: 3px solid transparent;
-    }
-
-    .nav-item:hover {
-      background-color: rgba(255, 255, 255, 0.02);
-      color: var(--text-primary);
-    }
-
-    .nav-item.active {
-      background: linear-gradient(90deg, rgba(212, 175, 55, 0.08), transparent);
-      color: var(--text-primary);
-      border-left-color: var(--gold-metallic);
-      font-weight: 600;
-    }
-
-    .sidebar-footer {
-      padding: 16px;
-      border-top: 1px solid var(--border-gold);
-    }
-
-    .sidebar-footer p {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      margin-top: 6px;
-    }
-
-    main {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+    main { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
 
     header {
       padding: 12px 24px;
@@ -179,39 +96,15 @@
       gap: 8px;
     }
 
-    .page-title h2 {
-      font-family: 'Cinzel', serif;
-      font-size: 1.2rem;
-      letter-spacing: 1px;
-    }
+    .page-title h2 { font-family: 'Cinzel', serif; font-size: 1.2rem; letter-spacing: 1px; }
+    .page-title p { font-size: 0.75rem; color: var(--text-muted); margin-top: 1px; }
 
-    .page-title p {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 1px;
-    }
+    .workspace { padding: 16px 24px; overflow-y: auto; flex-grow: 1; }
 
-    .workspace {
-      padding: 16px 24px;
-      overflow-y: auto;
-      flex-grow: 1;
-    }
+    .view-panel { display: none; }
+    .view-panel.active { display: block; animation: viewFadeIn 0.3s ease-out; }
 
-    .view-panel {
-      display: none;
-    }
-
-    .view-panel.active {
-      display: block;
-      animation: viewFadeIn 0.3s ease-out;
-    }
-
-    .grid-layout {
-      display: grid;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
+    .grid-layout { display: grid; gap: 12px; margin-bottom: 16px; }
     .cols-5 { grid-template-columns: repeat(5, 1fr); }
     .cols-4 { grid-template-columns: repeat(4, 1fr); }
     .cols-3 { grid-template-columns: repeat(3, 1fr); }
@@ -233,468 +126,88 @@
       transition: var(--transition-premium);
     }
 
-    .kronos-card::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 3px;
-      height: 100%;
-      background: var(--gold-metallic);
-    }
+    .kronos-card::after { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--gold-metallic); }
+    .kronos-card:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--gold-glow); }
+    .kronos-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .kronos-card-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: bold; }
 
-    .kronos-card:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px var(--gold-glow);
-    }
+    .gauge-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px 0; }
+    .gauge-svg { width: 150px; height: 85px; }
+    .gauge-track { fill: none; stroke: rgba(255, 255, 255, 0.03); stroke-width: 12; stroke-linecap: round; }
+    .gauge-fill { fill: none; stroke: url(#gauge-gold-grad); stroke-width: 12; stroke-linecap: round; stroke-dasharray: 283; stroke-dashoffset: 283; transition: stroke-dashoffset 1s ease-in-out; }
+    .gauge-value { font-family: 'Share Tech Mono', monospace; font-size: 2.2rem; font-weight: 700; fill: #fff; }
 
-    .kronos-card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-    }
-
-    .kronos-card-title {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-muted);
-      font-weight: bold;
-    }
-
-    .gauge-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 4px 0;
-    }
-
-    .gauge-svg {
-      width: 150px;
-      height: 85px;
-    }
-
-    .gauge-track {
-      fill: none;
-      stroke: rgba(255, 255, 255, 0.03);
-      stroke-width: 12;
-      stroke-linecap: round;
-    }
-
-    .gauge-fill {
-      fill: none;
-      stroke: url(#gauge-gold-grad);
-      stroke-width: 12;
-      stroke-linecap: round;
-      stroke-dasharray: 283;
-      stroke-dashoffset: 283;
-      transition: stroke-dashoffset 1s ease-in-out;
-    }
-
-    .gauge-value {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 2.2rem;
-      font-weight: 700;
-      fill: #fff;
-    }
-
-    .badge-status {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 0.65rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
+    .badge-status { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
     .badge-elite { background-color: rgba(212, 175, 55, 0.15); color: var(--color-elite); border: 1px solid rgba(212, 175, 55, 0.3); }
     .badge-excelente { background-color: rgba(0, 230, 118, 0.15); color: var(--color-excelente); border: 1px solid rgba(0, 230, 118, 0.3); }
     .badge-ok { background-color: rgba(0, 176, 255, 0.15); color: var(--color-ok); border: 1px solid rgba(0, 176, 255, 0.3); }
     .badge-atencao { background-color: rgba(255, 235, 59, 0.15); color: var(--color-atencao); border: 1px solid rgba(255, 235, 59, 0.3); }
     .badge-critico { background-color: rgba(255, 23, 68, 0.15); color: var(--color-critico); border: 1px solid rgba(255, 23, 68, 0.3); }
 
-    .timeline-card {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-gold);
-      border-radius: var(--radius-lg);
-      padding: 16px 20px;
-      margin-bottom: 16px;
-    }
+    .timeline-card { background-color: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 16px; }
+    .timeline-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .timeline-title { font-family: 'Cinzel', serif; font-size: 0.9rem; letter-spacing: 1px; color: var(--gold-metallic); }
+    .timeline-track-container { display: flex; justify-content: space-between; position: relative; padding: 10px 0; }
+    .timeline-track-container::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, var(--gold-metallic), var(--electric-blue), rgba(255, 255, 255, 0.05)); transform: translateY(-50%); z-index: 1; }
+    .timeline-node-step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; width: 20%; }
+    .timeline-bullet { width: 16px; height: 16px; background-color: var(--bg-card); border: 3px solid var(--gold-metallic); border-radius: 50%; box-shadow: 0 0 10px var(--gold-glow); transition: var(--transition-premium); }
+    .timeline-node-step.active .timeline-bullet { border-color: var(--electric-blue); box-shadow: 0 0 12px var(--blue-glow); }
+    .timeline-node-label { font-size: 0.7rem; font-weight: bold; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .timeline-node-time { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); margin-top: 2px; }
 
-    .timeline-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
+    .matrix-wrapper { background-color: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); margin-bottom: 16px; overflow: hidden; }
+    .matrix-title-bar { background-color: #121824; color: white; padding: 8px 16px; font-family: 'Cinzel', serif; font-size: 0.85rem; letter-spacing: 1px; border-bottom: 1px solid var(--border-gold); display: flex; justify-content: space-between; align-items: center; }
+    .matrix-table-scroll { width: 100%; overflow-x: auto; }
+    .matrix-table { width: 100%; border-collapse: collapse; min-width: 900px; }
+    .matrix-table th { background-color: rgba(255, 255, 255, 0.01); color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 6px; border: 1px solid var(--border-gold); text-align: center; }
+    .matrix-table td { padding: 4px 6px; border: 1px solid var(--border-gold); text-align: center; }
+    .matrix-table td.row-header { text-align: left; font-weight: 700; font-size: 0.75rem; padding-left: 12px; background-color: rgba(255, 255, 255, 0.02); width: 180px; }
+    .matrix-table input { width: 100%; background-color: var(--bg-input); border: 1px solid rgba(255, 255, 255, 0.05); color: #fff; padding: 4px; border-radius: 4px; text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; outline: none; }
+    .matrix-table input:focus { border-color: var(--gold-metallic); }
+    .pct-calc-cell { font-family: 'Share Tech Mono', monospace; font-weight: bold; font-size: 0.8rem; }
 
-    .timeline-title {
-      font-family: 'Cinzel', serif;
-      font-size: 0.9rem;
-      letter-spacing: 1px;
-      color: var(--gold-metallic);
-    }
+    .form-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+    .form-group label { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
 
-    .timeline-track-container {
-      display: flex;
-      justify-content: space-between;
-      position: relative;
-      padding: 10px 0;
-    }
+    input, select, textarea { background-color: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); padding: 6px 10px; font-size: 0.8rem; outline: none; transition: var(--transition-premium); font-family: inherit; }
+    input:focus, select:focus, textarea:focus { border-color: var(--gold-metallic); box-shadow: 0 0 8px var(--gold-glow); }
 
-    .timeline-track-container::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(90deg, var(--gold-metallic), var(--electric-blue), rgba(255, 255, 255, 0.05));
-      transform: translateY(-50%);
-      z-index: 1;
-    }
+    .table-responsive { width: 100%; overflow-x: auto; margin-top: 6px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+    th { background-color: rgba(255, 255, 255, 0.01); color: var(--text-muted); text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px; padding: 8px 12px; border-bottom: 1px solid var(--border-gold); text-align: left; }
+    td { padding: 8px 12px; border-bottom: 1px solid var(--border-color); }
+    tr:hover td { background-color: rgba(255, 255, 255, 0.01); }
 
-    .timeline-node-step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      z-index: 2;
-      width: 20%;
-    }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.8rem; cursor: pointer; border: none; transition: var(--transition-premium); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-gold { background: linear-gradient(135deg, var(--gold-metallic), var(--gold-dark)); color: var(--bg-main); box-shadow: 0 3px 10px var(--gold-glow); }
+    .btn-gold:hover { filter: brightness(1.1); transform: translateY(-0.5px); }
+    .btn-secondary { background-color: transparent; color: var(--text-primary); border: 1px solid var(--border-gold); }
+    .btn-secondary:hover { background-color: rgba(255, 255, 255, 0.02); border-color: var(--electric-blue); }
+    .btn-secondary.active-tab { background-color: rgba(212, 175, 55, 0.15); border-color: var(--gold-metallic); }
+    .btn-danger { background-color: rgba(255, 23, 68, 0.1); color: var(--color-critico); border: 1px solid rgba(255, 23, 68, 0.2); }
+    .btn-danger:hover { background-color: rgba(255, 23, 68, 0.15); }
 
-    .timeline-bullet {
-      width: 16px;
-      height: 16px;
-      background-color: var(--bg-card);
-      border: 3px solid var(--gold-metallic);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--gold-glow);
-      transition: var(--transition-premium);
-    }
+    .chart-box { height: 200px; position: relative; }
 
-    .timeline-node-step.active .timeline-bullet {
-      border-color: var(--electric-blue);
-      box-shadow: 0 0 12px var(--blue-glow);
-    }
+    .flow-panel-container { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 16px; }
+    .flow-card { background-color: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 12px; display: flex; flex-direction: column; justify-content: space-between; }
+    .flow-header { border-bottom: 1px solid rgba(212, 175, 55, 0.1); padding-bottom: 6px; margin-bottom: 8px; font-family: 'Cinzel', serif; font-size: 0.85rem; letter-spacing: 0.5px; color: var(--electric-blue); }
+    .flow-footer { margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255, 255, 255, 0.05); display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; text-align: center; }
+    .flow-footer-metric { font-size: 0.65rem; color: var(--text-muted); }
+    .flow-footer-value { font-family: 'Share Tech Mono', monospace; font-weight: bold; font-size: 0.85rem; color: #fff; }
 
-    .timeline-node-label {
-      font-size: 0.7rem;
-      font-weight: bold;
-      margin-top: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+    @keyframes rotateCog { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes viewFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    .timeline-node-time {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
+    .toast-container { position: fixed; bottom: 16px; right: 16px; display: flex; flex-direction: column; gap: 8px; z-index: 10000; max-width: 320px; }
+    .toast { background-color: var(--bg-card); border: 1px solid var(--border-gold); border-left: 4px solid var(--electric-blue); padding: 12px 16px; border-radius: var(--radius-md); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); font-size: 0.8rem; display: flex; align-items: center; gap: 10px; animation: viewFadeIn 0.2s cubic-bezier(0.25, 0.8, 0.25, 1); transition: opacity 0.25s ease; }
+    .empty-state-message { padding: 30px; text-align: center; color: var(--text-muted); font-size: 0.85rem; font-style: italic; }
 
-    .matrix-wrapper {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-gold);
-      border-radius: var(--radius-lg);
-      margin-bottom: 16px;
-      overflow: hidden;
-    }
-
-    .matrix-title-bar {
-      background-color: #121824;
-      color: white;
-      padding: 8px 16px;
-      font-family: 'Cinzel', serif;
-      font-size: 0.85rem;
-      letter-spacing: 1px;
-      border-bottom: 1px solid var(--border-gold);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .matrix-table-scroll {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    .matrix-table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 900px;
-    }
-
-    .matrix-table th {
-      background-color: rgba(255, 255, 255, 0.01);
-      color: var(--text-muted);
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 6px;
-      border: 1px solid var(--border-gold);
-      text-align: center;
-    }
-
-    .matrix-table td {
-      padding: 4px 6px;
-      border: 1px solid var(--border-gold);
-      text-align: center;
-    }
-
-    .matrix-table td.row-header {
-      text-align: left;
-      font-weight: 700;
-      font-size: 0.75rem;
-      padding-left: 12px;
-      background-color: rgba(255, 255, 255, 0.02);
-      width: 180px;
-    }
-
-    .matrix-table input {
-      width: 100%;
-      background-color: var(--bg-input);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      color: #fff;
-      padding: 4px;
-      border-radius: 4px;
-      text-align: center;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.8rem;
-      outline: none;
-    }
-
-    .matrix-table input:focus {
-      border-color: var(--gold-metallic);
-    }
-
-    .pct-calc-cell {
-      font-family: 'Share Tech Mono', monospace;
-      font-weight: bold;
-      font-size: 0.8rem;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: 10px;
-    }
-
-    .form-group label {
-      font-size: 0.7rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      letter-spacing: 0.5px;
-    }
-
-    input, select, textarea {
-      background-color: var(--bg-input);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      color: var(--text-primary);
-      padding: 6px 10px;
-      font-size: 0.8rem;
-      outline: none;
-      transition: var(--transition-premium);
-      font-family: inherit;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--gold-metallic);
-      box-shadow: 0 0 8px var(--gold-glow);
-    }
-
-    .table-responsive {
-      width: 100%;
-      overflow-x: auto;
-      margin-top: 6px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.75rem;
-    }
-
-    th {
-      background-color: rgba(255, 255, 255, 0.01);
-      color: var(--text-muted);
-      text-transform: uppercase;
-      font-size: 0.65rem;
-      letter-spacing: 0.5px;
-      padding: 8px 12px;
-      border-bottom: 1px solid var(--border-gold);
-      text-align: left;
-    }
-
-    td {
-      padding: 8px 12px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    tr:hover td {
-      background-color: rgba(255, 255, 255, 0.01);
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-radius: var(--radius-md);
-      font-weight: 600;
-      font-size: 0.8rem;
-      cursor: pointer;
-      border: none;
-      transition: var(--transition-premium);
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .btn-gold {
-      background: linear-gradient(135deg, var(--gold-metallic), var(--gold-dark));
-      color: var(--bg-main);
-      box-shadow: 0 3px 10px var(--gold-glow);
-    }
-
-    .btn-gold:hover {
-      filter: brightness(1.1);
-      transform: translateY(-0.5px);
-    }
-
-    .btn-secondary {
-      background-color: transparent;
-      color: var(--text-primary);
-      border: 1px solid var(--border-gold);
-    }
-
-    .btn-secondary:hover {
-      background-color: rgba(255, 255, 255, 0.02);
-      border-color: var(--electric-blue);
-    }
-
-    .btn-secondary.active-tab {
-      background-color: rgba(212, 175, 55, 0.15);
-      border-color: var(--gold-metallic);
-    }
-
-    .btn-danger {
-      background-color: rgba(255, 23, 68, 0.1);
-      color: var(--color-critico);
-      border: 1px solid rgba(255, 23, 68, 0.2);
-    }
-
-    .btn-danger:hover {
-      background-color: rgba(255, 23, 68, 0.15);
-    }
-
-    .chart-box {
-      height: 200px;
-      position: relative;
-    }
-
-    .flow-panel-container {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .flow-card {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-gold);
-      border-radius: var(--radius-lg);
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .flow-header {
-      border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-      padding-bottom: 6px;
-      margin-bottom: 8px;
-      font-family: 'Cinzel', serif;
-      font-size: 0.85rem;
-      letter-spacing: 0.5px;
-      color: var(--electric-blue);
-    }
-
-    .flow-footer {
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px dashed rgba(255, 255, 255, 0.05);
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      text-align: center;
-    }
-
-    .flow-footer-metric {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-    }
-
-    .flow-footer-value {
-      font-family: 'Share Tech Mono', monospace;
-      font-weight: bold;
-      font-size: 0.85rem;
-      color: #fff;
-    }
-
-    @keyframes rotateCog {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    @keyframes viewFadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .toast-container {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      z-index: 10000;
-      max-width: 320px;
-    }
-
-    .toast {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-gold);
-      border-left: 4px solid var(--electric-blue);
-      padding: 12px 16px;
-      border-radius: var(--radius-md);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      animation: viewFadeIn 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-      transition: opacity 0.25s ease;
-    }
-
-    .empty-state-message {
-      padding: 30px;
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      font-style: italic;
-    }
+    .sync-indicator { font-size: 0.65rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+    .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-excelente); }
+    .sync-dot.syncing { background: var(--color-atencao); animation: pulseDot 1s infinite; }
+    @keyframes pulseDot { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
   </style>
 </head>
 <body>
@@ -718,12 +231,13 @@
         <li class="nav-item" data-view="ranking">Ranking Operacional</li>
         <li class="nav-item" data-view="warroom">War Room</li>
         <li class="nav-item" data-view="tendencias">Tendências</li>
-        <li class="nav-item" data-view="exportacoes">Exportações & APIs</li>
+        <li class="nav-item" data-view="exportacoes">Exportações</li>
       </ul>
     </div>
     <div class="sidebar-footer">
-      <p>KRONOS Engine v3.0 • BRFPE1</p>
+      <p>KRONOS Engine v4.0 • BRFPE1</p>
       <p style="opacity: 0.5;">Controle do tempo. Domínio da operação.</p>
+      <p class="sync-indicator" style="margin-top:8px;"><span class="sync-dot" id="syncDot"></span><span id="syncLabel">Conectado à planilha</span></p>
     </div>
   </aside>
 
@@ -835,11 +349,11 @@
             </div>
             <div class="flow-footer">
               <div class="flow-footer-metric">
-                <div>Utilização</div>
+                <div>IDLE Compliance</div>
                 <div class="flow-footer-value" id="outboundUtilVal">-</div>
               </div>
               <div class="flow-footer-metric">
-                <div>Eficiência</div>
+                <div>Eficiência THP</div>
                 <div class="flow-footer-value" id="outboundEfVal">-</div>
               </div>
               <div class="flow-footer-metric">
@@ -860,7 +374,7 @@
               <span class="kronos-card-title">Turnos Arquivados</span>
             </div>
             <div style="font-family: 'Share Tech Mono', monospace; font-size: 2rem; font-weight: bold; margin: 4px 0;" id="dashKpiTotal">0</div>
-            <div style="font-size: 0.65rem; color: var(--text-muted);">Banco de dados integrado KRONOS</div>
+            <div style="font-size: 0.65rem; color: var(--text-muted);">Banco de dados integrado KRONOS (Google Sheets)</div>
           </div>
 
           <div class="kronos-card" style="grid-column: span 2; display: flex; flex-direction: column; justify-content: space-between;">
@@ -910,9 +424,6 @@
         <div class="kronos-card" style="margin-bottom: 16px;">
           <div style="display: flex; gap: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border-gold); padding-bottom: 6px; align-items: center; justify-content: space-between;">
             <span class="kronos-card-title">Aba de Fluxo Operacional (Visão Analítica)</span>
-            <div style="display: flex; gap: 6px;">
-              <button class="btn btn-secondary active-tab" style="padding: 4px 10px; font-size: 0.7rem;" id="tabBtnOutbound">CHECKING & OUTBOUND</button>
-            </div>
           </div>
 
           <div class="grid-layout cols-4" style="gap: 8px; margin-bottom: 8px;">
@@ -1321,7 +832,7 @@
             </div>
             <div style="margin-top: 8px;">
               <div id="wrIdleConsolidated" style="font-family: 'Share Tech Mono', monospace; font-size: 1.4rem; font-weight: bold; color: var(--gold-metallic);">-</div>
-              <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">Média global de conformidade contra ociosidade</p>
+              <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">Média global de conformidade contra ociosidade (regra: &gt;=95% OK)</p>
             </div>
           </div>
         </div>
@@ -1462,22 +973,18 @@
 
       <!-- VIEW: EXPORTACOES -->
       <div id="view-exportacoes" class="view-panel">
-        <div class="grid-layout cols-4">
+        <div class="grid-layout cols-3">
           <div class="kronos-card" style="cursor: pointer;" id="cardExportExecutivo">
             <div class="kronos-card-header"><span class="kronos-card-title">Card Executivo</span></div>
             <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Gera imagem de alta resolução otimizada para envio em grupos executivos.</p>
           </div>
           <div class="kronos-card" style="cursor: pointer;" id="cardExportCsv">
             <div class="kronos-card-header"><span class="kronos-card-title">Exportar CSV</span></div>
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Gera e baixa a base tática compatível com o Google Sheets.</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Gera e baixa a base tática, compatível com Google Sheets/Excel.</p>
           </div>
           <div class="kronos-card" style="cursor: pointer;" id="cardExportWhats">
             <div class="kronos-card-header"><span class="kronos-card-title">Copiar WhatsApp</span></div>
             <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Copia resumo formatado para transmissão direta.</p>
-          </div>
-          <div class="kronos-card" style="cursor: pointer;" id="cardExportConfig">
-            <div class="kronos-card-header"><span class="kronos-card-title">Integração WebApp</span></div>
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Configure aqui a URL do Google Apps Script (uma única vez).</p>
           </div>
         </div>
       </div>
@@ -1486,22 +993,6 @@
   </main>
 
   <div class="toast-container" id="toastContainer"></div>
-
-  <!-- CONFIGURATION MODAL -->
-  <div id="configModal" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; place-items:center;">
-    <div class="kronos-card" style="width: 500px; max-width: 90%;">
-      <div class="kronos-card-header"><span class="kronos-card-title">Configurar Google Apps Script</span></div>
-      <div class="form-group" style="margin-top: 10px;">
-        <label>URL Web App do Script</label>
-        <input type="text" id="configApiUrl" placeholder="https://script.google.com/macros/s/AKfycbwKOGPuPCUQxC-mM9WKTLMwZadYNJ-ROI1jkRbS9lyfsEnwCcQdp4E_M8ZX7krgVwHf/exec">
-      </div>
-      <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 20px;">Insira a URL obtida ao realizar a implantação de Web App na sua planilha oficial. A URL deve terminar em <strong>/exec</strong>. Depois de salvar, o KRONOS passa a ler e gravar direto na planilha automaticamente — sem precisar clicar em nada.</p>
-      <div style="display: flex; gap:12px; justify-content:flex-end;">
-        <button class="btn btn-secondary" id="btnCancelConfig">Cancelar</button>
-        <button class="btn btn-gold" id="btnSaveConfig">Salvar Integração</button>
-      </div>
-    </div>
-  </div>
 
   <!-- SUPERVISOR VALIDATION MODAL -->
   <div id="validationModal" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10001; place-items:center;">
@@ -1536,11 +1027,11 @@
 
   <script>
     // ===================================================================
-    // CONFIGURAÇÃO DO FRONT-END KRONOS
-    // Fonte da verdade: Google Sheets, via API Google Apps Script.
-    // Sem botões de sincronização manual — o KRONOS carrega os dados da
-    // planilha automaticamente ao abrir e após cada gravação/validação/
-    // exclusão, e mantém tudo atualizado sozinho em segundo plano.
+    // KRONOS FRONT-END
+    // Fonte da verdade: Google Sheets, acessado via google.script.run
+    // (sem fetch, sem URL de Web App, sem token, sem HTTP 401).
+    // Carrega os dados automaticamente ao abrir e após cada
+    // gravação/validação/exclusão. Sincroniza em segundo plano.
     // ===================================================================
     const turnos = {
       T1: {
@@ -1578,24 +1069,8 @@
       }
     };
 
-    // localStorage é usado SOMENTE para lembrar a URL do Apps Script
-    // configurada (uma preferência local do navegador) — nunca para guardar
-    // os registros. Os registros vêm sempre da planilha.
-    const fallbackMemoryStorage = {};
-    const safeStorage = {
-      get(key) {
-        try { return localStorage.getItem(key); }
-        catch (e) { return fallbackMemoryStorage[key] !== undefined ? fallbackMemoryStorage[key] : null; }
-      },
-      set(key, value) {
-        try { localStorage.setItem(key, value); }
-        catch (e) { fallbackMemoryStorage[key] = value; }
-      }
-    };
-
     const KronosState = {
       records: [],
-      configApiUrl: safeStorage.get("kronos_config_api_url") || "",
       activeValidationId: null,
       volumeChart: null,
       trendScoreChart: null,
@@ -1609,6 +1084,30 @@
         return this.records;
       }
     };
+
+    // ---------------------------------------------------------------
+    // PONTE ÚNICA COM O BACKEND: google.script.run promisificado.
+    // Toda leitura/gravação passa por aqui. Nada de fetch/HTTP.
+    // ---------------------------------------------------------------
+    function runGs(fnName, ...args) {
+      return new Promise((resolve, reject) => {
+        if (!window.google || !google.script || !google.script.run) {
+          reject(new Error("google.script.run indisponível. Abra o KRONOS pela URL de implantação da Web App do Apps Script."));
+          return;
+        }
+        google.script.run
+          .withSuccessHandler((result) => resolve(result))
+          .withFailureHandler((err) => reject(err instanceof Error ? err : new Error(err && err.message ? err.message : String(err))))
+          [fnName](...args);
+      });
+    }
+
+    function setSyncStatus(syncing) {
+      const dot = document.getElementById("syncDot");
+      const label = document.getElementById("syncLabel");
+      if (dot) dot.classList.toggle("syncing", !!syncing);
+      if (label) label.innerText = syncing ? "Sincronizando..." : "Conectado à planilha";
+    }
 
     function wireStaticEvents() {
       document.querySelectorAll(".nav-item[data-view]").forEach(item => {
@@ -1656,10 +1155,6 @@
       on("cardExportExecutivo", "click", exportCardExecutivo);
       on("cardExportCsv", "click", exportToExcel);
       on("cardExportWhats", "click", copiarResSummary);
-      on("cardExportConfig", "click", toggleConfigModal);
-
-      on("btnCancelConfig", "click", toggleConfigModal);
-      on("btnSaveConfig", "click", saveApiConfig);
 
       on("btnCloseValidation", "click", closeValidationModal);
       on("btnRejectValidation", "click", () => confirmSupervisorValidation("REJECTED"));
@@ -1691,18 +1186,12 @@
 
       try { startSystemCountdown(); } catch (e) {}
 
-      // Carga automática dos dados da planilha — sem clique nenhum.
-      if (!KronosState.configApiUrl) {
-        showToast("Configure a URL do Google Apps Script em Exportações & APIs > Integração WebApp.", "warning");
-        toggleConfigModal();
-      } else {
-        refreshData();
-      }
+      // Carga automática dos dados da planilha, sem clique nenhum.
+      refreshData();
 
-      // Mantém tudo sincronizado sozinho em segundo plano, sem indicador
-      // de "online/offline" e sem qualquer botão manual.
+      // Sincronização periódica em segundo plano.
       setInterval(() => {
-        if (KronosState.configApiUrl) refreshData({ silent: true });
+        refreshData({ silent: true });
       }, 45000);
 
       try {
@@ -1875,6 +1364,7 @@
       const wtRealThpEl = document.getElementById("wtRealThp");
       if (wtRealThpEl) wtRealThpEl.innerText = `${realThpPerformance}%`;
 
+      // ------ IDLE (regra: >=95% Normal / <95% Vermelho, sempre calculado dos dados reais) ------
       let totalRealIdle = 0, idleControlHours = 0;
       for (let i = 0; i < len; i++) {
         const metaVal = parseFloat(document.getElementById(`idle_meta_${i}`)?.value) || 0;
@@ -2018,56 +1508,6 @@
       };
     }
 
-    async function callKronosApi(action, { method = "GET", data = null } = {}) {
-      if (!KronosState.configApiUrl) {
-        throw new Error("NO_API_CONFIGURED");
-      }
-
-      let response;
-      try {
-        if (method === "GET") {
-          const url = new URL(KronosState.configApiUrl);
-          url.searchParams.set("action", action);
-          url.searchParams.set("_ts", Date.now());
-          if (data) {
-            Object.entries(data).forEach(([k, v]) => url.searchParams.set(k, v));
-          }
-          response = await fetch(url.toString(), { method: "GET", mode: "cors", cache: "no-store", redirect: "follow" });
-        } else {
-          response = await fetch(KronosState.configApiUrl, {
-            method: "POST",
-            mode: "cors",
-            redirect: "follow",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ action, data })
-          });
-        }
-      } catch (networkErr) {
-        throw new Error("Falha de rede: " + networkErr.message);
-      }
-
-      if (!response.ok) {
-        throw new Error(`Erro HTTP ${response.status}`);
-      }
-
-      const rawText = await response.text();
-      let payload;
-      try {
-        payload = JSON.parse(rawText);
-      } catch (parseErr) {
-        const looksLikeHtml = /<html|<!DOCTYPE/i.test(rawText);
-        throw new Error(looksLikeHtml
-          ? "O servidor devolveu uma página HTML em vez de JSON. Verifique se a implantação do Web App está com acesso \"Qualquer pessoa\" e se foi criada uma NOVA implantação após a última alteração do Code.gs."
-          : "Resposta inválida do servidor (não é JSON).");
-      }
-
-      if (!payload || payload.success !== true) {
-        throw new Error((payload && payload.message) || "Falha ao processar a solicitação no servidor.");
-      }
-
-      return payload.data;
-    }
-
     async function handleFormSubmit(event) {
       event.preventDefault();
 
@@ -2082,9 +1522,6 @@
       const len = template.horarios.length;
       const live = calculateLiveScores();
 
-      // Lê os valores REALMENTE digitados nas linhas de Meta e Real da
-      // matriz horária (e não o template estático), para que uma meta
-      // editada manualmente pelo operador seja de fato persistida.
       const matrixThpMeta = [], matrixThpReal = [];
       const matrixIdleMeta = [], matrixIdleReal = [];
       const matrixCotMeta = [], matrixCotReal = [];
@@ -2148,24 +1585,21 @@
         hourlyCOTReal: matrixCotReal
       };
 
-      if (!KronosState.configApiUrl) {
-        showToast("Configure a URL do Google Apps Script antes de gravar.", "error");
-        toggleConfigModal();
-        return;
-      }
-
       const submitBtn = document.getElementById("btnSubmitTurno");
       if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = "Gravando..."; }
+      setSyncStatus(true);
 
       try {
-        await callKronosApi(isUpdate ? "updateRecord" : "createRecord", { method: "POST", data: record });
+        await runGs(isUpdate ? "updateRecord" : "createRecord", record);
         showToast("Registro gravado com sucesso na planilha.");
         delete form.dataset.currentRecordId;
+        resetForm();
         await refreshData();
         switchView("dashboard");
       } catch (err) {
         showToast("Erro ao gravar: " + err.message, "error");
       } finally {
+        setSyncStatus(false);
         if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Gravar Dados de Turno"; }
       }
     }
@@ -2174,6 +1608,9 @@
       const form = document.getElementById("registrarTurnoForm");
       if (form) form.reset();
       if (form) delete form.dataset.currentRecordId;
+      const todayString = new Date().toISOString().split('T')[0];
+      const regDateEl = document.getElementById("regDate");
+      if (regDateEl) regDateEl.value = todayString;
       onShiftChange(true);
     }
 
@@ -2490,7 +1927,7 @@
         btnDel.className = "btn btn-danger";
         btnDel.style.padding = "4px 8px"; btnDel.style.fontSize = "0.7rem";
         btnDel.innerText = "Excluir";
-        btnDel.addEventListener("click", () => deleteRecord(r.id));
+        btnDel.addEventListener("click", () => deleteRecordUI(r.id));
 
         tdActions.appendChild(btnLink);
         tdActions.appendChild(btnLoad);
@@ -2539,13 +1976,16 @@
       const id = KronosState.activeValidationId;
       const action = decision === "REJECTED" ? "rejectScore" : "validateScore";
 
+      setSyncStatus(true);
       try {
-        await callKronosApi(action, { method: "POST", data: { id, validatedBy: supervisorName, comment } });
+        await runGs(action, { id, validatedBy: supervisorName, comment });
         showToast("Validação enviada.");
         closeValidationModal();
         await refreshData();
       } catch (err) {
         showToast(`Erro na validação: ${err.message}`, "error");
+      } finally {
+        setSyncStatus(false);
       }
     }
 
@@ -2596,8 +2036,6 @@
         if (el) el.value = val;
       }
 
-      // Restaura a matriz horária exatamente como foi salva no registro,
-      // incluindo eventuais edições de Meta feitas na época do lançamento.
       const template = turnos[record.shift];
       if (template && template.horarios) {
         template.horarios.forEach((_, i) => {
@@ -2621,15 +2059,18 @@
       switchView("registrar");
     }
 
-    async function deleteRecord(id) {
+    async function deleteRecordUI(id) {
       if (!confirm("Confirmar a exclusão permanente deste registro na planilha?")) return;
 
+      setSyncStatus(true);
       try {
-        await callKronosApi("deleteRecord", { method: "POST", data: { id } });
+        await runGs("deleteRecord", { id });
         showToast("Registro removido da planilha.");
         await refreshData();
       } catch (err) {
         showToast(`Erro ao excluir: ${err.message}`, "error");
+      } finally {
+        setSyncStatus(false);
       }
     }
 
@@ -2973,42 +2414,16 @@
       }
     }
 
-    function toggleConfigModal() {
-      const m = document.getElementById("configModal");
-      if (!m) return;
-      const opening = (m.style.display === "none" || m.style.display === "");
-      m.style.display = opening ? "grid" : "none";
-      if (opening) {
-        const apiInput = document.getElementById("configApiUrl");
-        if (apiInput) apiInput.value = KronosState.configApiUrl;
-      }
-    }
-
-    function saveApiConfig() {
-      const url = document.getElementById("configApiUrl")?.value.trim() || "";
-      if (!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(url)) {
-        showToast('A URL precisa ser do formato .../macros/s/SEU_ID/exec (implantação como Web App).', "error");
-        return;
-      }
-      KronosState.configApiUrl = url;
-      safeStorage.set("kronos_config_api_url", url);
-      showToast("Configuração salva. Carregando dados da planilha...");
-      toggleConfigModal();
-      refreshData();
-    }
-
     // Única função de comunicação com a planilha: busca todos os registros
-    // via getData e substitui totalmente o estado local pelo resultado do
-    // servidor. Chamada automaticamente ao abrir a página, após qualquer
-    // gravação/edição/exclusão/validação, e periodicamente em segundo
-    // plano — nunca por clique manual.
+    // via getData (google.script.run) e substitui totalmente o estado
+    // local pelo resultado do servidor.
     async function refreshData(opts = {}) {
       if (KronosState.isSyncing) return;
-      if (!KronosState.configApiUrl) return;
       KronosState.isSyncing = true;
+      setSyncStatus(true);
 
       try {
-        const data = await callKronosApi("getData");
+        const data = await runGs("getData");
         KronosState.setRecords((data && data.records) || []);
         renderAllViews();
       } catch (err) {
@@ -3019,6 +2434,7 @@
         }
       } finally {
         KronosState.isSyncing = false;
+        setSyncStatus(false);
       }
     }
 
