@@ -755,7 +755,7 @@
     </div>
     <div class="sidebar-footer">
       <div class="conn-status" id="connectionBadge">Conectando...</div>
-      <p>KRONOS Engine v2.4 • BRFPE1</p>
+      <p>KRONOS Engine v2.5 • BRFPE1</p>
       <p style="opacity: 0.5;">Controle do tempo. Domínio da operação.</p>
     </div>
   </aside>
@@ -1645,13 +1645,10 @@
  
   <script>
     // ===================================================================
-    // KRONOS FRONT-END — v2.5 (correção do contrato de dados com o backend)
+    // KRONOS FRONT-END — v2.5 (contrato de dados alinhado com o backend)
     // Fonte da verdade dos dados: Google Sheets, via API Google Apps Script.
     // ===================================================================
  
-    // Configurações globais e templates de turno corporativos (METAS padrão,
-    // não são dados de resultado/real — servem apenas de ponto de partida
-    // editável para o registro de cada turno).
     const turnos = {
       T1: {
         inicio: "06:00",
@@ -1688,9 +1685,6 @@
       }
     };
  
-    // Cache local de contingência apenas — NUNCA é a fonte da verdade.
-    // Usado somente quando não há URL de API configurada (modo local) ou
-    // quando o servidor está indisponível (modo offline / cache de leitura).
     const fallbackMemoryStorage = {};
     const safeStorage = {
       get(key) {
@@ -1709,8 +1703,6 @@
       }
     };
 
-    // Leitura segura do cache local: nunca deixa um JSON corrompido derrubar
-    // o fluxo de sincronização nem ser confundido com falha de rede.
     function readCachedRecords() {
       try {
         const cached = safeStorage.get("kronos_records_cache");
@@ -1721,7 +1713,6 @@
       }
     }
  
-    // Estado centralizado da aplicação (KRONOS Store)
     const KronosState = {
       records: [],
       configApiUrl: safeStorage.get("kronos_config_api_url") || "",
@@ -1734,8 +1725,6 @@
  
       setRecords(newRecords) {
         this.records = newRecords;
-        // O cache local é só uma cópia de leitura para o modo offline —
-        // não é usado como base para decidir o que existe de verdade.
         safeStorage.set("kronos_records_cache", JSON.stringify(newRecords));
       },
       getRecords() {
@@ -1767,10 +1756,8 @@
       try { startSystemCountdown(); } catch (e) { console.error("Erro no relógio regressivo:", e); }
       try { checkApiConnection(); } catch (e) { console.error("Erro ao validar ponte API:", e); }
  
-      // Inicializa a sincronização com o banco de dados oficial
       try { syncWithGoogleSheets(); } catch (e) { console.error("Erro ao sincronizar planilha:", e); }
  
-      // Leitura de link externo para validação rápida do supervisor
       try {
         const urlParams = new URLSearchParams(window.location.search);
         const validateId = urlParams.get('validate');
@@ -1806,10 +1793,6 @@
       return "T3";
     }
  
-    // Gerador de identificador único e estável para rastreabilidade de dados
-    // (RECORD_ID). Usa crypto.randomUUID quando disponível (navegadores
-    // modernos / contexto seguro); cai para um gerador de fallback apenas
-    // quando a API não existe.
     function generateUUID() {
       if (window.crypto && typeof window.crypto.randomUUID === 'function') {
         return window.crypto.randomUUID();
@@ -1910,7 +1893,6 @@
  
       const len = template.horarios.length;
       
-      // Processamento e cálculo de volumetria THP
       let totalMetaThp = 0, totalRealThp = 0;
       for (let i = 0; i < len; i++) {
         const metaVal = parseFloat(document.getElementById(`thp_meta_${i}`)?.value) || 0;
@@ -1933,7 +1915,6 @@
       const wtRealThpEl = document.getElementById("wtRealThp");
       if (wtRealThpEl) wtRealThpEl.innerText = `${realThpPerformance}%`;
  
-      // Processamento de IDLE (Ociosidade Operacional)
       let totalMetaIdle = 0, totalRealIdle = 0, idleControlHours = 0;
       for (let i = 0; i < len; i++) {
         const metaVal = parseFloat(document.getElementById(`idle_meta_${i}`)?.value) || 0;
@@ -1957,8 +1938,6 @@
       const avgRealIdle = idleControlHours > 0 ? (totalRealIdle / idleControlHours) : 0;
       const avgMetaIdle = idleControlHours > 0 ? (totalMetaIdle / idleControlHours) : 0;
       
-      // Validação crítica de conformidade de IDLE (Meta corporativa mínima de 95% livre de ociosidade)
-      // Regra: compliance >= 95% => VERDE (bom); compliance < 95% => VERMELHO (desvio).
       const idleComplianceReal = Math.max(0, 100 - avgRealIdle);
       const wtRealIdleEl = document.getElementById("wtRealIdle");
       if (wtRealIdleEl) {
@@ -1972,7 +1951,6 @@
         }
       }
  
-      // Processamento e validação de COT (Cut Off Time)
       let totalMetaCot = 0, totalRealCot = 0, cotHours = 0;
       for (let i = 0; i < len; i++) {
         const metaVal = parseFloat(document.getElementById(`cot_meta_${i}`)?.value) || 0;
@@ -2001,7 +1979,6 @@
       const pOutboundMeta = parseFloat(document.getElementById("metaOutboundTHP")?.value) || 0;
       const pOutboundReal = parseFloat(document.getElementById("realOutboundTHP")?.value) || 0;
  
-      // Fast Start & Strong Finish
       const mFast = parseFloat(document.getElementById("metaFastStart")?.value) || 85;
       const realFast = parseFloat(document.getElementById("realFastStart")?.value) || 0;
       
@@ -2094,11 +2071,6 @@
       };
     }
  
-    // ===================================================================
-    // CAMADA DE COMUNICAÇÃO COM A API (Google Apps Script)
-    // Padrão único de chamada + padrão único de resposta esperado:
-    // { success: boolean, message: string, data?: any, error?: string }
-    // ===================================================================
     async function callKronosApi(action, { method = "GET", data = null } = {}) {
       if (!KronosState.configApiUrl) {
         throw new Error("NO_API_CONFIGURED");
@@ -2109,7 +2081,7 @@
         if (method === "GET") {
           const url = new URL(KronosState.configApiUrl);
           url.searchParams.set("action", action);
-          url.searchParams.set("_ts", Date.now()); // evita respostas em cache de proxy/navegador
+          url.searchParams.set("_ts", Date.now());
           if (data) {
             Object.entries(data).forEach(([k, v]) => url.searchParams.set(k, v));
           }
@@ -2118,7 +2090,7 @@
           response = await fetch(KronosState.configApiUrl, {
             method: "POST",
             mode: "cors",
-            headers: { "Content-Type": "text/plain;charset=utf-8" }, // evita preflight CORS
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action, data })
           });
         }
@@ -2230,7 +2202,6 @@
         validationComment: isUpdate ? undefined : ""
       };
  
-      // Em atualização, preserva o status de validação já existente ao invés de resetar.
       if (isUpdate) {
         const existing = KronosState.getRecords().find(r => r.id === recordId);
         if (existing) {
@@ -2247,7 +2218,6 @@
  
       try {
         if (!KronosState.configApiUrl) {
-          // Modo local: sem ponte configurada, grava apenas no cache do navegador.
           const updated = KronosState.getRecords().filter(r => r.id !== record.id);
           updated.push(record);
           KronosState.setRecords(updated);
@@ -2264,7 +2234,6 @@
       } catch (err) {
         console.error("Erro ao gravar registro de turno:", err);
         showToast(`Não foi possível salvar o registro. ${err.message === "NO_API_CONFIGURED" ? "" : err.message}`, "error");
-        // Não navega e não limpa o formulário — os dados do usuário permanecem intactos.
       } finally {
         if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Gravar Dados de Turno"; }
       }
@@ -2680,11 +2649,9 @@
  
       document.getElementById("registrarTurnoForm").dataset.currentRecordId = record.id;
  
-      // Sincroniza o seletor de turno
       const regShift = document.getElementById("regShift");
       if (regShift) regShift.value = record.shift;
  
-      // Executa onShiftChange sem sobrescrever com templates estáticos
       onShiftChange(false);
  
       const elementsToUpdate = {
@@ -2714,7 +2681,6 @@
         if (el) el.value = val;
       }
  
-      // Restaura a Matriz Operacional Horária do Registro
       const template = turnos[record.shift];
       if (template && template.horarios) {
         template.horarios.forEach((_, i) => {
@@ -2866,6 +2832,17 @@
       setEl("wrBestKpiReal", `${best.real}%`);
       setEl("wrWorstKpiName", worst.name); 
       setEl("wrWorstKpiReal", `${worst.real}%`);
+ 
+      const bestImpactBadge = document.getElementById("wrBestKpiImpact");
+      if (bestImpactBadge) {
+        bestImpactBadge.innerText = best.real >= 95 ? "SLA OK" : (best.real >= 80 ? "ATENÇÃO" : "DESVIO");
+        bestImpactBadge.className = "badge-status " + (best.real >= 95 ? "badge-excelente" : (best.real >= 80 ? "badge-atencao" : "badge-critico"));
+      }
+      const worstImpactBadge = document.getElementById("wrWorstKpiImpact");
+      if (worstImpactBadge) {
+        worstImpactBadge.innerText = worst.real >= 95 ? "SLA OK" : (worst.real >= 80 ? "ATENÇÃO" : "DESVIO");
+        worstImpactBadge.className = "badge-status " + (worst.real >= 95 ? "badge-excelente" : (worst.real >= 80 ? "badge-atencao" : "badge-critico"));
+      }
  
       setEl("wrOutboundConsolidated", `${avgThp}%`);
       setEl("wrIdleConsolidated", `${avgIdleCompliance}%`);
@@ -3262,12 +3239,6 @@ ${active.notes || "Sem observações adicionais gravadas."}
       syncWithGoogleSheets();
     }
  
-    // ---------------------------------------------------------------------
-    // Este badge não afirma "Conexão Ativa" apenas porque existe uma URL
-    // salva. Ele apenas sinaliza que uma URL foi configurada; o status real
-    // (Ativa / Offline) só é decidido depois de uma tentativa de
-    // sincronização de verdade em syncWithGoogleSheets().
-    // ---------------------------------------------------------------------
     function checkApiConnection() {
       const badge = document.getElementById("connectionBadge");
       if (badge) {
@@ -3283,15 +3254,8 @@ ${active.notes || "Sem observações adicionais gravadas."}
       }
     }
  
-    // Sincronização central. Google Sheets é a ÚNICA fonte da verdade quando
-    // há uma ponte de API configurada: a resposta do servidor SUBSTITUI por
-    // completo os dados locais (nada é mesclado às cegas), evitando
-    // reaparecimento de registros já excluídos remotamente e divergências
-    // entre o que o usuário vê e o que realmente existe na planilha.
-    // Um guard de concorrência garante que apenas a resposta da chamada mais
-    // recente é aplicada, mesmo que respostas cheguem fora de ordem.
     async function syncWithGoogleSheets() {
-      if (KronosState.isSyncing) return; // evita chamadas simultâneas
+      if (KronosState.isSyncing) return;
       const requestId = ++KronosState.syncRequestId;
       KronosState.isSyncing = true;
  
@@ -3316,7 +3280,7 @@ ${active.notes || "Sem observações adicionais gravadas."}
         }
  
         const data = await callKronosApi("getData", { method: "GET" });
-        if (requestId !== KronosState.syncRequestId) return; // resposta obsoleta, descarta
+        if (requestId !== KronosState.syncRequestId) return;
  
         const records = (data && data.records) || [];
         KronosState.setRecords(records);
@@ -3350,15 +3314,6 @@ ${active.notes || "Sem observações adicionais gravadas."}
       }
     }
  
-    // ===================================================================
-    // SINCRONIZAÇÃO DIRETA COM DIAGNÓSTICO
-    // Primeiro chama a ação "health" (diagnóstico do backend: versão,
-    // planilha, aba, timestamp, quantidade de registros) e só então lê a
-    // planilha via getData. Nunca engole o erro: mostra HTTP status, se a
-    // resposta veio como JSON ou HTML (sinal de tela de login/permissão do
-    // Apps Script) e um preview bruto da resposta, para localizar
-    // exatamente onde a ponte quebrou.
-    // ===================================================================
     async function sincronizacaoDireta() {
       const btn = document.getElementById("btnDirectSync");
  
@@ -3378,7 +3333,6 @@ ${active.notes || "Sem observações adicionais gravadas."}
       };
 
       try {
-        // Passo 1: diagnóstico de saúde do backend (não fatal — só informativo)
         diag.etapa = "health_check";
         try {
           const healthUrl = new URL(KronosState.configApiUrl);
