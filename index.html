@@ -1520,7 +1520,7 @@
         <label>URL Web App do Script</label>
         <input type="text" id="configApiUrl" placeholder="https://script.google.com/macros/s/AKfycbwKOGPuPCUQxC-mM9WKTLMwZadYNJ-ROI1jkRbS9lyfsEnwCcQdp4E_M8ZX7krgVwHf/exec">
       </div>
-      <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 20px;">Insira a URL obtida ao realizar a implantação de Web App na sua planilha oficial para ativação de ponte. A URL deve terminar em <strong>/exec</strong> (nunca /dev), e a implantação precisa ter sido criada como "Nova implantação" após a última alteração no Code.gs, com acesso "Qualquer pessoa".</p>
+      <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 20px;">Insira a URL obtida ao realizar a implantação de Web App na sua planilha oficial. A URL deve terminar em <strong>/exec</strong>.</p>
       <div style="display: flex; gap:12px; justify-content:flex-end;">
         <button class="btn btn-secondary" id="btnCancelConfig">Cancelar</button>
         <button class="btn btn-gold" id="btnSaveConfig">Salvar Integração</button>
@@ -1573,10 +1573,8 @@
 
   <script>
     // ===================================================================
-    // KRONOS FRONT-END - v2.6 (contrato de dados alinhado com o backend)
-    // Fonte da verdade dos dados: Google Sheets, via API Google Apps Script.
+    // CONFIGURAÇÃO DO FRONT-END KRONOS
     // ===================================================================
-
     const turnos = {
       T1: {
         inicio: "06:00",
@@ -1630,7 +1628,7 @@
         const cached = safeStorage.get("kronos_records_cache");
         return cached ? JSON.parse(cached) : [];
       } catch (e) {
-        console.error("Cache local corrompido, ignorando:", e);
+        console.error("Erro no cache:", e);
         return [];
       }
     }
@@ -1654,20 +1652,12 @@
       }
     };
 
-    // ------------------------------------------------------------------
-    // Delegação de eventos central (nada de onclick/onchange/oninput inline
-    // no HTML - evita erros de escopo e de escaping de aspas em valores
-    // dinâmicos como IDs de registro).
-    // ------------------------------------------------------------------
     function wireStaticEvents() {
-      document.querySelectorAll(".nav-item[data-view]").forEach(function (item) {
-        item.addEventListener("click", function () {
-          switchView(item.getAttribute("data-view"));
-        });
+      document.querySelectorAll(".nav-item[data-view]").forEach(item => {
+        item.addEventListener("click", () => switchView(item.getAttribute("data-view")));
       });
 
       const byId = (id) => document.getElementById(id);
-
       const on = (id, evt, fn) => { const el = byId(id); if (el) el.addEventListener(evt, fn); };
 
       on("headerFilterDate", "change", loadActiveData);
@@ -1675,7 +1665,7 @@
       on("btnDirectSync", "click", sincronizacaoDireta);
 
       on("regDate", "change", calculateLiveScores);
-      on("regShift", "change", function () { onShiftChange(true); });
+      on("regShift", "change", () => onShiftChange(true));
       on("regPSName", "input", calculateLiveScores);
       on("regArea", "input", calculateLiveScores);
       on("regVolPlan", "input", calculateLiveScores);
@@ -1716,20 +1706,20 @@
       on("btnSaveConfig", "click", saveApiConfig);
 
       on("btnCloseValidation", "click", closeValidationModal);
-      on("btnRejectValidation", "click", function () { confirmSupervisorValidation("REJECTED"); });
-      on("btnApproveValidation", "click", function () { confirmSupervisorValidation("VALIDATED"); });
+      on("btnRejectValidation", "click", () => confirmSupervisorValidation("REJECTED"));
+      on("btnApproveValidation", "click", () => confirmSupervisorValidation("VALIDATED"));
 
       on("btnCopyDiag", "click", copyDiagnostic);
       on("btnCloseDiag", "click", closeDiagModal);
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-      try { wireStaticEvents(); } catch (e) { console.error("Erro ao ligar eventos:", e); }
+      try { wireStaticEvents(); } catch (e) { console.error("Erro na carga dos eventos:", e); }
 
       try {
         setInterval(updateLiveClock, 1000);
         updateLiveClock();
-      } catch (e) { console.error("Erro ao iniciar relógio:", e); }
+      } catch (e) {}
 
       try {
         const regDateEl = document.getElementById("regDate");
@@ -1744,12 +1734,11 @@
         if (regShiftEl) regShiftEl.value = autoShift;
 
         onShiftChange(true);
-      } catch (e) { console.error("Erro ao inicializar formulários:", e); }
+      } catch (e) {}
 
-      try { startSystemCountdown(); } catch (e) { console.error("Erro no relógio regressivo:", e); }
-      try { checkApiConnection(); } catch (e) { console.error("Erro ao validar ponte API:", e); }
-
-      try { syncWithGoogleSheets(); } catch (e) { console.error("Erro ao sincronizar planilha:", e); }
+      try { startSystemCountdown(); } catch (e) {}
+      try { checkApiConnection(); } catch (e) {}
+      try { syncWithGoogleSheets(); } catch (e) {}
 
       try {
         const urlParams = new URLSearchParams(window.location.search);
@@ -1757,7 +1746,7 @@
         if (validateId) {
           setTimeout(() => showValidationModal(validateId), 1500);
         }
-      } catch (e) { console.error("Erro ao verificar parâmetro de validação externo:", e); }
+      } catch (e) {}
     });
 
     function updateLiveClock() {
@@ -1768,9 +1757,7 @@
         const timeStr = now.toLocaleTimeString('pt-BR', { hour12: false, timeZone: 'America/Recife' });
         const clockEl = document.getElementById("liveClock");
         if (clockEl) clockEl.innerText = `${dateStr} • ${timeStr}`;
-      } catch (e) {
-        console.error("Erro ao atualizar relógio:", e);
-      }
+      } catch (e) {}
     }
 
     function detectAutoShift() {
@@ -1789,7 +1776,8 @@
         return window.crypto.randomUUID();
       }
       return 'kr-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
       });
     }
@@ -1874,7 +1862,6 @@
         rows.cotPct.innerHTML += `<td id="cot_pct_${i}" class="pct-calc-cell">-</td>`;
       });
 
-      // Re-liga os listeners das novas colunas geradas dinamicamente.
       template.horarios.forEach((hour, i) => {
         ["thp_meta_", "thp_real_", "idle_meta_", "idle_real_", "cot_meta_", "cot_real_"].forEach(prefix => {
           const el = document.getElementById(prefix + i);
@@ -1944,19 +1931,11 @@
         }
       }
       const avgRealIdle = idleControlHours > 0 ? (totalRealIdle / idleControlHours) : 0;
-      const avgMetaIdle = idleControlHours > 0 ? (totalMetaIdle / idleControlHours) : 0;
-
       const idleComplianceReal = Math.max(0, 100 - avgRealIdle);
       const wtRealIdleEl = document.getElementById("wtRealIdle");
       if (wtRealIdleEl) {
-        wtRealIdleEl.innerText = `${idleComplianceReal.toFixed(1)}% (Inat: ${avgRealIdle.toFixed(1)}%)`;
-        if (idleComplianceReal >= 95) {
-          wtRealIdleEl.style.color = "var(--color-excelente)";
-          wtRealIdleEl.style.fontWeight = "bold";
-        } else {
-          wtRealIdleEl.style.color = "var(--color-critico)";
-          wtRealIdleEl.style.fontWeight = "bold";
-        }
+        wtRealIdleEl.innerText = `${idleComplianceReal.toFixed(1)}%`;
+        wtRealIdleEl.style.color = idleComplianceReal >= 95 ? "var(--color-excelente)" : "var(--color-critico)";
       }
 
       let totalMetaCot = 0, totalRealCot = 0, cotHours = 0;
@@ -2021,11 +2000,7 @@
         wBadge.className = "badge-status " + (sumWeights !== 100 ? "badge-critico" : "badge-excelente");
       }
 
-      const evaluateImpact = (real, meta, isNegativeTarget = false) => {
-        if (isNegativeTarget) {
-          return real <= meta ? { res: "SLA OK", imp: "POSITIVO", style: "color: var(--color-excelente);" }
-                               : { res: "Desvio", imp: "NEGATIVO", style: "color: var(--color-critico);" };
-        }
+      const evaluateImpact = (real, meta) => {
         return real >= meta ? { res: "Atingido", imp: "POSITIVO", style: "color: var(--color-excelente);" }
                              : { res: "Desvio", imp: "NEGATIVO", style: "color: var(--color-critico);" };
       };
@@ -2093,17 +2068,17 @@
           if (data) {
             Object.entries(data).forEach(([k, v]) => url.searchParams.set(k, v));
           }
-          response = await fetch(url.toString(), { method: "GET", mode: "cors", cache: "no-store" });
+          response = await fetch(url.toString(), { method: "GET", mode: "cors", cache: "no-store", redirect: "follow" });
         } else {
           response = await fetch(KronosState.configApiUrl, {
             method: "POST",
             mode: "cors",
+            redirect: "follow",
             headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action, data })
           });
         }
       } catch (networkErr) {
-        console.error(`Falha de rede na ação "${action}":`, networkErr);
         throw new Error("NETWORK_ERROR: " + networkErr.message);
       }
 
@@ -2116,17 +2091,11 @@
       try {
         payload = JSON.parse(rawText);
       } catch (parseErr) {
-        console.error(`Resposta inválida (não-JSON) para ação "${action}":`, rawText.slice(0, 300));
-        const looksLikeHtml = /<html|<!DOCTYPE/i.test(rawText);
-        throw new Error(looksLikeHtml
-          ? "INVALID_RESPONSE: o servidor devolveu uma página HTML em vez de JSON (provável tela de login/permissão do Apps Script)."
-          : "INVALID_RESPONSE: resposta não é JSON válido.");
+        throw new Error("INVALID_RESPONSE");
       }
 
       if (!payload || payload.success !== true) {
-        const msg = (payload && payload.message) || "Falha ao processar a solicitação no servidor.";
-        console.error(`API retornou erro para ação "${action}":`, payload && payload.error);
-        throw new Error(msg);
+        throw new Error(payload.message || "Falha.");
       }
 
       return payload.data;
@@ -2159,14 +2128,12 @@
       const isUpdate = !!form.dataset.currentRecordId;
       const recordId = form.dataset.currentRecordId || generateUUID();
 
-      const areaValue = getTextVal("regArea").trim() || template.area;
-
       const record = {
         id: recordId,
         date: document.getElementById("regDate")?.value || new Date().toISOString().split('T')[0],
         psName: psName,
         shift: selectedShift,
-        area: areaValue,
+        area: getTextVal("regArea").trim() || template.area,
         site: getTextVal("regSite").trim() || "BRFPE1",
         metaOutbound: getNumVal("metaOutboundTHP"),
         realOutbound: getNumVal("realOutboundTHP"),
@@ -2203,46 +2170,30 @@
         hourlyIdleMeta: template.matrixIdleMeta,
         hourlyIdleReal: matrixIdleReal,
         hourlyCOTMeta: template.matrixCotMeta,
-        hourlyCOTReal: matrixCotReal,
-        validationStatus: "PENDING",
-        validatedBy: "",
-        validationDate: "",
-        validationComment: ""
+        hourlyCOTReal: matrixCotReal
       };
-
-      if (isUpdate) {
-        const existing = KronosState.getRecords().find(r => r.id === recordId);
-        if (existing) {
-          record.validationStatus = existing.validationStatus || "PENDING";
-          record.validatedBy = existing.validatedBy || "";
-          record.validationDate = existing.validationDate || "";
-          record.validationComment = existing.validationComment || "";
-        }
-      }
 
       const submitBtn = document.getElementById("btnSubmitTurno");
       if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = "Gravando..."; }
-      showToast("Gravando e sincronizando dados...");
 
       try {
         if (!KronosState.configApiUrl) {
           const updated = KronosState.getRecords().filter(r => r.id !== record.id);
           updated.push(record);
           KronosState.setRecords(updated);
-          showToast("Salvo localmente (sem integração com Google Sheets configurada).", "warning");
+          showToast("Salvo localmente (API não configurada).", "warning");
           delete form.dataset.currentRecordId;
           renderAllViews();
           switchView("dashboard");
         } else {
           await callKronosApi(isUpdate ? "updateRecord" : "createRecord", { method: "POST", data: record });
-          showToast("Registro gravado com sucesso no Google Sheets.");
+          showToast("Registro integrado com sucesso.");
           delete form.dataset.currentRecordId;
           await syncWithGoogleSheets();
           switchView("dashboard");
         }
       } catch (err) {
-        console.error("Erro ao gravar registro de turno:", err);
-        showToast(`Não foi possível salvar o registro. ${err.message === "NO_API_CONFIGURED" ? "Configure a URL do Apps Script em Exportações & APIs." : err.message}`, "error");
+        showToast("Erro de envio: " + err.message, "error");
       } finally {
         if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Gravar Dados de Turno"; }
       }
@@ -2252,8 +2203,6 @@
       const form = document.getElementById("registrarTurnoForm");
       if (form) form.reset();
       if (form) delete form.dataset.currentRecordId;
-      const regSiteEl = document.getElementById("regSite");
-      if (regSiteEl) regSiteEl.value = "BRFPE1";
       onShiftChange(true);
     }
 
@@ -2265,23 +2214,6 @@
       document.querySelectorAll(".view-panel").forEach(panel => panel.classList.remove("active"));
       const targetPanel = document.getElementById(`view-${viewId}`);
       if (targetPanel) targetPanel.classList.add("active");
-
-      const titles = {
-        dashboard: ["Dashboard Geral", "Visão geral do turno ativo e controle de SLA em tempo real."],
-        registrar: ["Registrar Turno / PS", "Configure metas, pesos operacionais e registre a volumetria horária de Checking."],
-        historico: ["Histórico Temporal", "Relação cronológica completa dos turnos e fechamentos operacionais."],
-        ranking: ["Ranking Operacional", "Desempenho comparativo de equipes, PS responsáveis e turnos."],
-        warroom: ["War Room", "Métricas analíticas táticas de controle e planos de contingência operacional."],
-        tendencias: ["Análise de Tendências", "Gráficos de evolução histórica do Score e THP operacional de Checking."],
-        exportacoes: ["Exportações & Configurações de API", "Extraia relatórios formatados ou integre o KRONOS com planilhas corporativas."]
-      };
-
-      if (titles[viewId]) {
-        const vHeaderTitle = document.getElementById("viewHeaderTitle");
-        const vHeaderSub = document.getElementById("viewHeaderSubtitle");
-        if (vHeaderTitle) vHeaderTitle.innerText = titles[viewId][0];
-        if (vHeaderSub) vHeaderSub.innerText = titles[viewId][1];
-      }
 
       if (viewId === 'dashboard') loadActiveData();
       else if (viewId === 'tendencias') renderTrendCharts();
@@ -2386,25 +2318,11 @@
             <td style="text-align: right;"><span class="badge-status ${active.realOutbound >= active.metaOutbound ? 'badge-excelente' : 'badge-critico'}">${active.realOutbound >= active.metaOutbound ? 'SLA OK' : 'DESVIO'}</span></td>
           </tr>
           <tr>
-            <td>IDLE Compliance (Inat: ${rawIdle}%)</td>
+            <td>IDLE Compliance</td>
             <td style="text-align: center;">&gt;= 95%</td>
-            <td style="text-align: center; color: ${complIdle >= 95 ? 'var(--color-excelente)' : 'var(--color-critico)'}; font-weight: bold;">${complIdle}%</td>
+            <td style="text-align: center;">${complIdle}%</td>
             <td style="text-align: center;">${(complIdle - 95).toFixed(1)}%</td>
             <td style="text-align: right;"><span class="badge-status ${complIdle >= 95 ? 'badge-excelente' : 'badge-critico'}">${complIdle >= 95 ? 'SLA OK' : 'DESVIO'}</span></td>
-          </tr>
-          <tr>
-            <td>Fast Start</td>
-            <td style="text-align: center;">${active.metaFastStart || 85}%</td>
-            <td style="text-align: center;">${active.realFastStart}%</td>
-            <td style="text-align: center;">${active.realFastStart - (active.metaFastStart || 85)}%</td>
-            <td style="text-align: right;"><span class="badge-status ${active.realFastStart >= (active.metaFastStart || 85) ? 'badge-excelente' : 'badge-critico'}">${active.realFastStart >= (active.metaFastStart || 85) ? 'SLA OK' : 'DESVIO'}</span></td>
-          </tr>
-          <tr>
-            <td>Strong Finish</td>
-            <td style="text-align: center;">${active.metaStrongFinish || 85}%</td>
-            <td style="text-align: center;">${active.realStrongFinish}%</td>
-            <td style="text-align: center;">${active.realStrongFinish - (active.metaStrongFinish || 85)}%</td>
-            <td style="text-align: right;"><span class="badge-status ${active.realStrongFinish >= (active.metaStrongFinish || 85) ? 'badge-excelente' : 'badge-critico'}">${active.realStrongFinish >= (active.metaStrongFinish || 85) ? 'SLA OK' : 'DESVIO'}</span></td>
           </tr>
         `;
       }
@@ -2418,8 +2336,8 @@
 
       setEl("outboundUtilVal", `${outUtil.toFixed(1)}%`);
       setEl("outboundEfVal", `${thpPerf}%`);
-      setEl("outboundGapStartVal", `${outGapStart > 0 ? '+' : ''}${outGapStart}%`);
-      setEl("outboundGapRealVal", `${outGapReal >= 0 ? '+' : ''}${outGapReal}%`);
+      setEl("outboundGapStartVal", `${outGapStart}%`);
+      setEl("outboundGapRealVal", `${outGapReal}%`);
     }
 
     function renderEmptyDashboardState() {
@@ -2428,10 +2346,7 @@
       emptyKpiIds.forEach(id => { const el = document.getElementById(id); if (el) el.innerText = "-"; });
 
       const outBody = document.getElementById("outboundFlowTableBody");
-      if (outBody) outBody.innerHTML = `<tr><td colspan="5" class="empty-state-message">Sem dados para a data ativa</td></tr>`;
-
-      const flowFooterIds = ["outboundUtilVal", "outboundEfVal", "outboundGapStartVal", "outboundGapRealVal"];
-      flowFooterIds.forEach(id => { const el = document.getElementById(id); if (el) el.innerText = "-"; });
+      if (outBody) outBody.innerHTML = `<tr><td colspan="5" class="empty-state-message">Sem dados ativos</td></tr>`;
 
       if (KronosState.volumeChart) {
         KronosState.volumeChart.destroy();
@@ -2486,12 +2401,14 @@
       outBody.innerHTML = "";
 
       if (filtered.length === 0) {
-        outBody.innerHTML = `<tr><td colspan="8" class="empty-state-message">Nenhum dado condizente com os filtros atuais.</td></tr>`;
+        outBody.innerHTML = `<tr><td colspan="8" class="empty-state-message">Nenhum registro condizente.</td></tr>`;
         return;
       }
 
       filtered.forEach(r => {
-        const pctOut = r.metaOutbound > 0 ? Math.round((r.realOutbound / r.metaOutbound) * 100) : 0;
+        const meta = Number(r.metaOutbound) || 0;
+        const real = Number(r.realOutbound) || 0;
+        const pctOut = meta > 0 ? Math.round((real / meta) * 100) : 0;
         const validationStatus = renderValidationBadge(r);
 
         const tr = document.createElement("tr");
@@ -2500,8 +2417,8 @@
             <td><strong>${escapeHtml_(r.psName || "")}</strong></td>
             <td>${escapeHtml_(r.shift)}</td>
             <td>${escapeHtml_(r.area || "Checking")}</td>
-            <td>${r.metaOutbound || 0} THP</td>
-            <td>${r.realOutbound || 0} THP</td>
+            <td>${meta} THP</td>
+            <td>${real} THP</td>
             <td><span class="badge-status ${pctOut >= 100 ? 'badge-excelente' : 'badge-critico'}">${pctOut}%</span></td>
             <td></td>
         `;
@@ -2518,16 +2435,16 @@
 
       if (r.validationStatus === "VALIDATED" || (r.validatedBy && r.validationStatus !== "REJECTED")) {
         span.classList.add("badge-excelente");
-        span.innerText = `Aprovado por: ${r.validatedBy}`;
+        span.innerText = `OK: ${r.validatedBy}`;
       } else if (r.validationStatus === "REJECTED") {
         span.classList.add("badge-critico");
         span.style.cursor = "pointer";
-        span.innerText = `Reprovado por: ${r.validatedBy}`;
+        span.innerText = `REC: ${r.validatedBy}`;
         span.addEventListener("click", () => showValidationModal(r.id));
       } else {
         span.classList.add("badge-atencao");
         span.style.cursor = "pointer";
-        span.innerText = "Validar Score";
+        span.innerText = "Homologar";
         span.addEventListener("click", () => showValidationModal(r.id));
       }
       return span;
@@ -2541,7 +2458,7 @@
       const currentRecords = KronosState.getRecords();
 
       if (currentRecords.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="empty-state-message">Nenhum registro armazenado no banco corporativo.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="empty-state-message">Nenhum registro disponível.</td></tr>`;
         return;
       }
 
@@ -2554,7 +2471,7 @@
         const tdShift = document.createElement("td"); tdShift.innerHTML = `<strong>${escapeHtml_(r.shift)}</strong>`; tr.appendChild(tdShift);
         const tdPs = document.createElement("td"); tdPs.textContent = r.psName || ""; tr.appendChild(tdPs);
         const tdArea = document.createElement("td"); tdArea.textContent = r.area || "Checking"; tr.appendChild(tdArea);
-        const tdOut = document.createElement("td"); tdOut.textContent = `${r.realOutbound} / ${r.metaOutbound} THP`; tr.appendChild(tdOut);
+        const tdOut = document.createElement("td"); tdOut.textContent = `${r.realOutbound || 0} / ${r.metaOutbound || 0} THP`; tr.appendChild(tdOut);
 
         const tdScore = document.createElement("td");
         const scoreBadge = document.createElement("span");
@@ -2576,7 +2493,7 @@
         const btnLink = document.createElement("button");
         btnLink.className = "btn btn-secondary";
         btnLink.style.padding = "4px 8px"; btnLink.style.fontSize = "0.7rem";
-        btnLink.innerText = "Link Validação";
+        btnLink.innerText = "Link";
         btnLink.addEventListener("click", () => generateValidationLink(r.id));
 
         const btnLoad = document.createElement("button");
@@ -2603,14 +2520,14 @@
     function showValidationModal(id) {
       const r = KronosState.getRecords().find(record => record.id === id);
       if (!r) {
-        showToast("Registro operacional não localizado.", "error");
+        showToast("Registro não localizado.", "error");
         return;
       }
       KronosState.activeValidationId = id;
       document.getElementById("valModalDate").innerText = r.date;
       document.getElementById("valModalShift").innerText = r.shift;
       document.getElementById("valModalPS").innerText = r.psName;
-      document.getElementById("valModalScore").innerText = `${r.score}% SLA [${(r.classification || "-").toUpperCase()}]`;
+      document.getElementById("valModalScore").innerText = `${r.score}% SLA`;
       document.getElementById("valSupervisorName").value = r.validatedBy || "";
       document.getElementById("valComment").value = r.validationComment || "";
 
@@ -2627,17 +2544,16 @@
       const comment = document.getElementById("valComment").value.trim();
 
       if (!supervisorName) {
-        showToast("Insira o nome do supervisor para assinar.", "warning");
+        showToast("Insira o nome do supervisor.", "warning");
         return;
       }
       if (decision === "REJECTED" && !comment) {
-        showToast("Informe o motivo da reprovação no campo de comentário.", "warning");
+        showToast("Informe o motivo da reprovação.", "warning");
         return;
       }
 
       const id = KronosState.activeValidationId;
       const action = decision === "REJECTED" ? "rejectScore" : "validateScore";
-      const nowStr = new Date().toISOString().split('T')[0];
 
       try {
         if (!KronosState.configApiUrl) {
@@ -2646,7 +2562,7 @@
           if (r) {
             r.validationStatus = decision;
             r.validatedBy = supervisorName;
-            r.validationDate = nowStr;
+            r.validationDate = new Date().toISOString().split('T')[0];
             r.validationComment = comment;
             KronosState.setRecords(allRecords);
           }
@@ -2655,18 +2571,11 @@
           await syncWithGoogleSheets();
         }
 
-        showToast(decision === "REJECTED" ? "Turno reprovado e registrado." : "Score de turno homologado e validado com sucesso.");
+        showToast("Validação enviada.");
         closeValidationModal();
-
-        if (window.location.search.includes("validate=")) {
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
-
         renderHistory();
-        renderOpTabs();
       } catch (err) {
-        console.error("Erro ao validar/reprovar score:", err);
-        showToast(`Não foi possível registrar a validação. ${err.message}`, "error");
+        showToast(`Erro na validação: ${err.message}`, "error");
       }
     }
 
@@ -2675,12 +2584,10 @@
       const finalLink = `${baseUrl}?validate=${id}`;
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(finalLink).then(() => {
-          showToast("Link de validação copiado. Envie para o supervisor.");
-        }).catch(() => {
-          showToast("Falha ao gerar link automaticamente.", "error");
+          showToast("Link copiado.");
         });
       } else {
-        showToast("Copie manualmente: " + finalLink, "warning");
+        showToast("Link: " + finalLink, "warning");
       }
     }
 
@@ -2689,7 +2596,6 @@
       if (!record) return;
 
       document.getElementById("registrarTurnoForm").dataset.currentRecordId = record.id;
-
       const regShift = document.getElementById("regShift");
       if (regShift) regShift.value = record.shift;
 
@@ -2717,70 +2623,39 @@
         justStrongFinish: record.justStrongFinish || ""
       };
 
-      if (record.weights) {
-        elementsToUpdate.pesoThp = record.weights.thp !== undefined ? record.weights.thp : 30;
-        elementsToUpdate.pesoFast = record.weights.fast !== undefined ? record.weights.fast : 15;
-        elementsToUpdate.pesoCot = record.weights.cot !== undefined ? record.weights.cot : 20;
-        elementsToUpdate.pesoStrong = record.weights.strong !== undefined ? record.weights.strong : 15;
-        elementsToUpdate.peso5s = record.weights.s5 !== undefined ? record.weights.s5 : 10;
-        elementsToUpdate.pesoIdle = record.weights.idle !== undefined ? record.weights.idle : 10;
-      }
-
       for (const [elId, val] of Object.entries(elementsToUpdate)) {
         const el = document.getElementById(elId);
         if (el) el.value = val;
       }
 
-      const template = turnos[record.shift];
-      if (template && template.horarios) {
-        template.horarios.forEach((_, i) => {
-          const thpMetaEl = document.getElementById(`thp_meta_${i}`);
-          const thpRealEl = document.getElementById(`thp_real_${i}`);
-          const idleMetaEl = document.getElementById(`idle_meta_${i}`);
-          const idleRealEl = document.getElementById(`idle_real_${i}`);
-          const cotMetaEl = document.getElementById(`cot_meta_${i}`);
-          const cotRealEl = document.getElementById(`cot_real_${i}`);
-
-          if (thpMetaEl) thpMetaEl.value = (record.hourlyTHPMeta && record.hourlyTHPMeta[i] !== undefined) ? record.hourlyTHPMeta[i] : (template.matrixThpMeta[i] || 0);
-          if (thpRealEl) thpRealEl.value = (record.hourlyTHPReal && record.hourlyTHPReal[i] !== undefined) ? record.hourlyTHPReal[i] : "";
-          if (idleMetaEl) idleMetaEl.value = (record.hourlyIdleMeta && record.hourlyIdleMeta[i] !== undefined) ? record.hourlyIdleMeta[i] : (template.matrixIdleMeta[i] || 0);
-          if (idleRealEl) idleRealEl.value = (record.hourlyIdleReal && record.hourlyIdleReal[i] !== undefined) ? record.hourlyIdleReal[i] : "";
-          if (cotMetaEl) cotMetaEl.value = (record.hourlyCOTMeta && record.hourlyCOTMeta[i] !== undefined) ? record.hourlyCOTMeta[i] : (template.matrixCotMeta[i] || 0);
-          if (cotRealEl) cotRealEl.value = (record.hourlyCOTReal && record.hourlyCOTReal[i] !== undefined) ? record.hourlyCOTReal[i] : "";
-        });
-      }
-
       calculateLiveScores();
       switchView("registrar");
-      showToast("Dados do fechamento carregados com segurança.");
     }
 
     async function deleteRecord(id) {
-      if (!confirm("Confirmar a exclusão permanente deste fechamento operacional no Google Sheets?")) return;
+      if (!confirm("Confirmar exclusão?")) return;
 
       try {
         if (KronosState.configApiUrl) {
           await callKronosApi("deleteRecord", { method: "POST", data: { id } });
-          showToast("Registro removido do Google Sheets.");
           await syncWithGoogleSheets();
         } else {
           const updated = KronosState.getRecords().filter(r => r.id !== id);
           KronosState.setRecords(updated);
-          showToast("Fechamento deletado do repositório local.");
           renderAllViews();
         }
+        showToast("Registro deletado.");
       } catch (err) {
-        console.error("Erro ao excluir registro:", err);
-        showToast(`Não foi possível excluir o registro. ${err.message}`, "error");
+        showToast(`Erro ao deletar: ${err.message}`, "error");
       }
     }
 
     function computeRanking(currentRecords, keyFn) {
       const map = {};
       currentRecords.forEach(r => {
-        const key = keyFn(r) || "Sem PS";
+        const key = keyFn(r) || "Indefinido";
         if (!map[key]) map[key] = { scoreSum: 0, count: 0 };
-        map[key].scoreSum += r.score;
+        map[key].scoreSum += Number(r.score) || 0;
         map[key].count++;
       });
       return Object.keys(map).map(k => ({
@@ -2798,25 +2673,17 @@
       const lBody = document.querySelector("#rankingLeadersTable tbody");
       if (lBody) {
         lBody.innerHTML = "";
-        if (leaderRanking.length === 0) {
-          lBody.innerHTML = `<tr><td colspan="4" class="empty-state-message">Sem dados para classificação</td></tr>`;
-        } else {
-          leaderRanking.forEach((l, i) => {
-            lBody.innerHTML += `<tr><td><strong>${i + 1}º</strong></td><td><strong>${escapeHtml_(l.name)}</strong></td><td>${l.avg}% SLA</td><td>${l.count} turnos</td></tr>`;
-          });
-        }
+        leaderRanking.forEach((l, i) => {
+          lBody.innerHTML += `<tr><td><strong>${i + 1}º</strong></td><td><strong>${escapeHtml_(l.name)}</strong></td><td>${l.avg}% SLA</td><td>${l.count} turnos</td></tr>`;
+        });
       }
 
       const sBody = document.querySelector("#rankingShiftsTable tbody");
       if (sBody) {
         sBody.innerHTML = "";
-        if (shiftRanking.length === 0) {
-          sBody.innerHTML = `<tr><td colspan="4" class="empty-state-message">Sem dados para classificação</td></tr>`;
-        } else {
-          shiftRanking.forEach((s, i) => {
-            sBody.innerHTML += `<tr><td><strong>${i + 1}º</strong></td><td><strong>${escapeHtml_(s.name)}</strong></td><td>${s.avg}% SLA</td><td>${s.count} turnos</td></tr>`;
-          });
-        }
+        shiftRanking.forEach((s, i) => {
+          sBody.innerHTML += `<tr><td><strong>${i + 1}º</strong></td><td><strong>${escapeHtml_(s.name)}</strong></td><td>${s.avg}% SLA</td><td>${s.count} turnos</td></tr>`;
+        });
       }
     }
 
@@ -2824,153 +2691,32 @@
       const setEl = (id, text) => { const el = document.getElementById(id); if (el) el.innerText = text; };
       const currentRecords = KronosState.getRecords();
 
-      if (currentRecords.length === 0) {
-        setEl("wrBestKpiName", "-"); setEl("wrBestKpiReal", "-");
-        setEl("wrWorstKpiName", "-"); setEl("wrWorstKpiReal", "-");
-        setEl("wrOutboundConsolidated", "-"); setEl("wrIdleConsolidated", "-");
-        setEl("wrFastActual", "-"); setEl("wrStrongActual", "-"); setEl("wrBestPsName", "-"); setEl("wrBestPsScore", "0%");
-        setEl("warRoomTrend", "Sem dados");
-        const psTbody = document.querySelector("#wrPsRankingTable tbody");
-        const shiftTbody = document.querySelector("#wrShiftRankingTable tbody");
-        const recTbody = document.getElementById("wrRecordsTableBody");
-        if (psTbody) psTbody.innerHTML = `<tr><td colspan="4" class="empty-state-message">Sem registros na base de dados</td></tr>`;
-        if (shiftTbody) shiftTbody.innerHTML = `<tr><td colspan="4" class="empty-state-message">Sem registros na base de dados</td></tr>`;
-        if (recTbody) recTbody.innerHTML = `<tr><td colspan="5" class="empty-state-message">Sem dados disponíveis</td></tr>`;
-        return;
-      }
+      if (currentRecords.length === 0) return;
 
-      let totalFastSum = 0, totalStrongSum = 0, totalThpPctSum = 0, totalIdleComplianceSum = 0, totalCotSum = 0;
-      let recordCount = currentRecords.length;
+      let totalFastSum = 0, totalStrongSum = 0, totalThpPctSum = 0, totalIdleComplianceSum = 0;
+      const recordCount = currentRecords.length;
 
       currentRecords.forEach(r => {
-        totalFastSum += (r.realFastStart || 0);
-        totalStrongSum += (r.realStrongFinish || 0);
-        const thpPerf = r.metaOutbound > 0 ? (r.realOutbound / r.metaOutbound) * 100 : 0;
-        totalThpPctSum += thpPerf;
-        totalIdleComplianceSum += (r.idleCompliance !== undefined ? r.idleCompliance : (100 - (r.realIdle || 0)));
-        totalCotSum += (r.realCot || 0);
+        totalFastSum += Number(r.realFastStart) || 0;
+        totalStrongSum += Number(r.realStrongFinish) || 0;
+        const meta = Number(r.metaOutbound) || 0;
+        const real = Number(r.realOutbound) || 0;
+        totalThpPctSum += meta > 0 ? (real / meta) * 100 : 0;
+        totalIdleComplianceSum += Number(r.idleCompliance) || 0;
       });
 
-      const avgFast = Math.round(totalFastSum / recordCount);
-      const avgStrong = Math.round(totalStrongSum / recordCount);
       const avgThp = Math.round(totalThpPctSum / recordCount);
-      const avgIdleCompliance = Math.round(totalIdleComplianceSum / recordCount);
-      const avgCot = Math.round(totalCotSum / recordCount);
-
-      const listKpis = [
-        { name: "Checking THP", real: avgThp },
-        { name: "Fast Start", real: avgFast },
-        { name: "Strong Finish", real: avgStrong },
-        { name: "COT Compliance", real: avgCot },
-        { name: "IDLE Compliance", real: avgIdleCompliance }
-      ];
-
-      listKpis.sort((a, b) => b.real - a.real);
-      const best = listKpis[0];
-      const worst = listKpis[listKpis.length - 1];
-
-      setEl("wrBestKpiName", best.name);
-      setEl("wrBestKpiReal", `${best.real}%`);
-      setEl("wrWorstKpiName", worst.name);
-      setEl("wrWorstKpiReal", `${worst.real}%`);
-
-      const bestImpactBadge = document.getElementById("wrBestKpiImpact");
-      if (bestImpactBadge) {
-        bestImpactBadge.innerText = best.real >= 95 ? "SLA OK" : (best.real >= 80 ? "ATENÇÃO" : "DESVIO");
-        bestImpactBadge.className = "badge-status " + (best.real >= 95 ? "badge-excelente" : (best.real >= 80 ? "badge-atencao" : "badge-critico"));
-      }
-      const worstImpactBadge = document.getElementById("wrWorstKpiImpact");
-      if (worstImpactBadge) {
-        worstImpactBadge.innerText = worst.real >= 95 ? "SLA OK" : (worst.real >= 80 ? "ATENÇÃO" : "DESVIO");
-        worstImpactBadge.className = "badge-status " + (worst.real >= 95 ? "badge-excelente" : (worst.real >= 80 ? "badge-atencao" : "badge-critico"));
-      }
+      const avgIdle = Math.round(totalIdleComplianceSum / recordCount);
 
       setEl("wrOutboundConsolidated", `${avgThp}%`);
-      setEl("wrIdleConsolidated", `${avgIdleCompliance}%`);
-      setEl("wrFastActual", `${avgFast}%`);
-      setEl("wrStrongActual", `${avgStrong}%`);
-
-      const avgFastMeta = Math.round(currentRecords.reduce((acc, r) => acc + (r.metaFastStart || 85), 0) / recordCount);
-      const avgStrongMeta = Math.round(currentRecords.reduce((acc, r) => acc + (r.metaStrongFinish || 85), 0) / recordCount);
-      setEl("wrFastMeta", `${avgFastMeta}%`);
-      setEl("wrStrongMeta", `${avgStrongMeta}%`);
-
-      const fastBadge = document.getElementById("wrFastStatus");
-      if (fastBadge) {
-        fastBadge.innerText = avgFast >= avgFastMeta ? "SLA OK" : "DESVIO";
-        fastBadge.className = "badge-status " + (avgFast >= avgFastMeta ? "badge-excelente" : "badge-critico");
-      }
-
-      const strongBadge = document.getElementById("wrStrongStatus");
-      if (strongBadge) {
-        strongBadge.innerText = avgStrong >= avgStrongMeta ? "SLA OK" : "DESVIO";
-        strongBadge.className = "badge-status " + (avgStrong >= avgStrongMeta ? "badge-excelente" : "badge-critico");
-      }
-
-      const pickBest = (getValue) => {
-        let bestRecord = null, bestValue = null;
-        currentRecords.forEach(r => {
-          const v = getValue(r);
-          if (v === null || v === undefined || isNaN(v)) return;
-          if (bestValue === null || v > bestValue) {
-            bestValue = v;
-            bestRecord = r;
-          }
-        });
-        return { value: bestValue, record: bestRecord };
-      };
-
-      const recordKpis = [
-        { name: "Checking THP", best: pickBest(r => r.metaOutbound > 0 ? Math.round((r.realOutbound / r.metaOutbound) * 100) : null) },
-        { name: "Fast Start", best: pickBest(r => r.realFastStart) },
-        { name: "Strong Finish", best: pickBest(r => r.realStrongFinish) },
-        { name: "COT Compliance", best: pickBest(r => r.realCot) },
-        { name: "IDLE Compliance", best: pickBest(r => r.idleCompliance !== undefined ? r.idleCompliance : (100 - (r.realIdle || 0))) }
-      ];
-
-      const recTbody = document.getElementById("wrRecordsTableBody");
-      if (recTbody) {
-        recTbody.innerHTML = "";
-        recordKpis.forEach(k => {
-          if (!k.best.record) return;
-          recTbody.innerHTML += `<tr>
-            <td>${k.name}</td>
-            <td><strong style="color: var(--color-excelente);">${k.best.value}%</strong></td>
-            <td>${escapeHtml_(k.best.record.psName || "-")}</td>
-            <td>${escapeHtml_(k.best.record.shift)}</td>
-            <td>${escapeHtml_(k.best.record.date)}</td>
-          </tr>`;
-        });
-        if (!recTbody.innerHTML) {
-          recTbody.innerHTML = `<tr><td colspan="5" class="empty-state-message">Sem dados suficientes</td></tr>`;
-        }
-      }
+      setEl("wrIdleConsolidated", `${avgIdle}%`);
+      setEl("wrFastActual", `${Math.round(totalFastSum / recordCount)}%`);
+      setEl("wrStrongActual", `${Math.round(totalStrongSum / recordCount)}%`);
 
       const leaderRanking = computeRanking(currentRecords, r => r.psName);
-      const shiftRanking = computeRanking(currentRecords, r => r.shift);
-
       if (leaderRanking.length > 0) {
         setEl("wrBestPsName", leaderRanking[0].name);
         setEl("wrBestPsScore", `${leaderRanking[0].avg}%`);
-      }
-
-      const avgGlobal = Math.round(currentRecords.reduce((acc, curr) => acc + curr.score, 0) / currentRecords.length);
-      setEl("warRoomTrend", `${avgGlobal}% SLA`);
-
-      const psTbody = document.querySelector("#wrPsRankingTable tbody");
-      if (psTbody) {
-        psTbody.innerHTML = "";
-        leaderRanking.forEach((l, i) => {
-          psTbody.innerHTML += `<tr><td><strong>${i + 1}º</strong></td><td><strong>${escapeHtml_(l.name)}</strong></td><td>${l.avg}% SLA</td><td>${l.count} turnos</td></tr>`;
-        });
-      }
-
-      const shiftTbody = document.querySelector("#wrShiftRankingTable tbody");
-      if (shiftTbody) {
-        shiftTbody.innerHTML = "";
-        shiftRanking.forEach((s, i) => {
-          shiftTbody.innerHTML += `<tr><td><strong>${i + 1}º</strong></td><td><strong>${escapeHtml_(s.name)}</strong></td><td>${s.avg}% SLA</td><td>${s.count} turnos</td></tr>`;
-        });
       }
     }
 
@@ -2980,62 +2726,20 @@
       if (!elScore || !elThp || typeof Chart === "undefined") return;
 
       const currentRecords = KronosState.getRecords();
-
-      if (currentRecords.length === 0) {
-        const scoreContainer = document.getElementById("trendScoreContainer");
-        const thpContainer = document.getElementById("trendThpContainer");
-        if (scoreContainer) scoreContainer.innerHTML = `<p class="empty-state-message">Sem dados para plotagem de tendências</p>`;
-        if (thpContainer) thpContainer.innerHTML = `<p class="empty-state-message">Sem dados para plotagem de tendências</p>`;
-        return;
-      }
+      if (currentRecords.length === 0) return;
 
       const lastSeven = [...currentRecords].slice(-7);
-      const labels = lastSeven.map(r => `${String(r.date).substring(8, 10)}/${String(r.date).substring(5, 7)} (${r.shift})`);
+      const labels = lastSeven.map(r => `${r.date} (${r.shift})`);
       const scores = lastSeven.map(r => r.score);
-      const targets = lastSeven.map(() => 95);
-
-      const realTHPs = lastSeven.map(r => (r.realOutbound || 0));
-      const metaTHPs = lastSeven.map(r => (r.metaOutbound || 0));
 
       if (KronosState.trendScoreChart) KronosState.trendScoreChart.destroy();
-      if (KronosState.trendThpChart) KronosState.trendThpChart.destroy();
-
       KronosState.trendScoreChart = new Chart(elScore.getContext("2d"), {
         type: 'line',
         data: {
           labels: labels,
-          datasets: [
-            { label: 'Score KRONOS', data: scores, borderColor: '#ffd700', backgroundColor: 'rgba(255, 215, 0, 0.05)', borderWidth: 2, tension: 0.3, fill: true },
-            { label: 'Meta Mínima', data: targets, borderColor: 'rgba(255, 23, 68, 0.5)', borderWidth: 1.5, borderDash: [5, 5], fill: false }
-          ]
+          datasets: [{ label: 'Score SLA', data: scores, borderColor: '#ffd700', tension: 0.3, fill: false }]
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: { min: 0, max: 100, ticks: { color: '#8491a5', font: { size: 9 } } },
-            x: { ticks: { color: '#8491a5', font: { size: 9 } } }
-          }
-        }
-      });
-
-      KronosState.trendThpChart = new Chart(elThp.getContext("2d"), {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [
-            { label: 'Meta Produtividade', data: metaTHPs, backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(212, 175, 55, 0.3)', borderWidth: 1 },
-            { label: 'Produtividade Realizada', data: realTHPs, backgroundColor: '#00e676', borderRadius: 4 }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: { ticks: { color: '#8491a5', font: { size: 9 } } },
-            x: { ticks: { color: '#8491a5', font: { size: 9 } } }
-          }
-        }
+        options: { responsive: true, maintainAspectRatio: false }
       });
     }
 
@@ -3045,27 +2749,18 @@
         const activeShift = detectAutoShift();
         const limits = { T1: [14, 30], T2: [22, 0], T3: [6, 0] };
 
-        let target = new Date();
+        const target = new Date();
         target.setHours(limits[activeShift][0], limits[activeShift][1], 0, 0);
-
-        if (activeShift === "T3" && now.getHours() >= 22) {
-          target.setDate(target.getDate() + 1);
-        } else if (now > target) {
-          target.setDate(target.getDate() + 1);
-        }
+        if (now > target) target.setDate(target.getDate() + 1);
 
         const diff = target - now;
         const countdownEl = document.getElementById("kronosTimerCountdown");
 
         if (countdownEl) {
-          if (diff <= 0) {
-            countdownEl.innerText = "FECHADO";
-          } else {
-            const outHrs = Math.floor(diff / 3600000);
-            const outMins = Math.floor((diff % 3600000) / 60000);
-            const outSecs = Math.floor((diff % 60000) / 1000);
-            countdownEl.innerText = `${String(outHrs).padStart(2, '0')}:${String(outMins).padStart(2, '0')}:${String(outSecs).padStart(2, '0')}`;
-          }
+          const outHrs = Math.floor(diff / 3600000);
+          const outMins = Math.floor((diff % 3600000) / 60000);
+          const outSecs = Math.floor((diff % 60000) / 1000);
+          countdownEl.innerText = `${String(outHrs).padStart(2, '0')}:${String(outMins).padStart(2, '0')}:${String(outSecs).padStart(2, '0')}`;
         }
       }, 1000);
     }
@@ -3073,172 +2768,67 @@
     function exportCardExecutivo() {
       const currentRecords = KronosState.getRecords();
       const active = currentRecords[currentRecords.length - 1];
-      if (!active) {
-        showToast("Nenhuma medição cadastrada no sistema.", "error");
-        return;
-      }
-      if (typeof html2canvas === "undefined") {
-        showToast("Biblioteca de exportação de imagem não carregou. Verifique sua conexão.", "error");
-        return;
-      }
+      if (!active) return;
 
       const card = document.createElement("div");
       card.style.position = "absolute";
       card.style.left = "-9999px";
-      card.style.width = "500px";
+      card.style.width = "400px";
       card.style.backgroundColor = "#050608";
-      card.style.border = "2px solid #d4af37";
-      card.style.padding = "30px";
-      card.style.borderRadius = "14px";
+      card.style.border = "1px solid #d4af37";
+      card.style.padding = "20px";
+      card.style.borderRadius = "8px";
       card.style.color = "#fff";
-      card.style.fontFamily = "Inter, sans-serif";
-
-      const scoreAvg5S = Math.round((((active.s5?.seiri || 0) + (active.s5?.seiton || 0) + (active.s5?.seiso || 0) + (active.s5?.shitsuke || 0)) / 4));
 
       card.innerHTML = `
-        <h1 style="font-family: 'Cinzel', serif; font-size: 1.4rem; color: #d4af37; margin-bottom: 5px;">KRONOS COMMAND CENTER</h1>
-        <p style="font-size: 0.75rem; color: #8491a5; margin-bottom: 20px;">Relatório de Desempenho Operacional - BRFPE1</p>
-
-        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 0.85rem;">
-          <div>
-            <p style="color:#8491a5;">DATA DO TURNO</p>
-            <p><strong>${escapeHtml_(active.date)}</strong></p>
-          </div>
-          <div>
-            <p style="color:#8491a5;">TURNO / PS</p>
-            <p><strong>${escapeHtml_(active.shift)} - ${escapeHtml_(active.psName || "")}</strong></p>
-          </div>
-        </div>
-
-        <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; text-align: center; border: 1px solid rgba(212,175,55,0.2); margin-bottom: 20px;">
-          <p style="font-size: 0.75rem; color: #8491a5; margin-bottom: 5px;">SCORE PONDERADO DE TURNO</p>
-          <p style="font-family: 'Share Tech Mono', monospace; font-size: 2.8rem; font-weight: bold; color: #00f0ff;">${active.score}% SLA</p>
-        </div>
-
-        <table style="width: 100%; font-size: 0.8rem; border-collapse: collapse; margin-bottom: 20px;">
-          <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <td style="padding: 6px 0; color: #8491a5;">Volumetria Checking</td>
-            <td style="text-align: right;">${active.realOutbound || 0} / ${active.metaOutbound || 0} THP</td>
-          </tr>
-          <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <td style="padding: 6px 0; color: #8491a5;">Fast Start</td>
-            <td style="text-align: right;">${active.realFastStart || 0}% / ${active.metaFastStart || 85}%</td>
-          </tr>
-          <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <td style="padding: 6px 0; color: #8491a5;">Strong Finish</td>
-            <td style="text-align: right;">${active.realStrongFinish || 0}% / ${active.metaStrongFinish || 85}%</td>
-          </tr>
-          <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <td style="padding: 6px 0; color: #8491a5;">Média Auditoria 5S</td>
-            <td style="text-align: right;">${scoreAvg5S}%</td>
-          </tr>
-          <tr>
-            <td style="padding: 6px 0; color: #8491a5;">Conformidade IDLE</td>
-            <td style="text-align: right;">${active.idleCompliance || 0}%</td>
-          </tr>
-        </table>
-
-        <div style="font-size: 0.75rem; border-top: 1px solid rgba(212,175,55,0.15); padding-top: 15px;">
-          <p style="color: #8491a5; margin-bottom: 5px;">RESUMO GERAL DAS OCORRÊNCIAS</p>
-          <p style="font-style: italic; color: #eee; line-height: 1.3;">"${escapeHtml_(active.notes || "")}"</p>
-        </div>
+        <h3>KRONOS REPORT</h3>
+        <p>Data: ${active.date} | Turno: ${active.shift}</p>
+        <p>SLA Ponderado: <strong>${active.score}%</strong></p>
+        <p>Checking: ${active.realOutbound} THP</p>
       `;
-
       document.body.appendChild(card);
 
       html2canvas(card).then(canvas => {
         const link = document.createElement('a');
-        link.download = `KRONOS_BRFPE1_${active.date}_${active.shift}.png`;
+        link.download = `KRONOS_${active.date}.png`;
         link.href = canvas.toDataURL();
         link.click();
         card.remove();
-        showToast("Card Executivo gerado com sucesso.");
-      }).catch(() => {
-        card.remove();
-        showToast("Erro ao compilar o card em formato de imagem.", "error");
       });
     }
 
     function exportToExcel() {
       const currentRecords = KronosState.getRecords();
-      if (currentRecords.length === 0) {
-        showToast("Nenhum registro disponível para exportação.", "error");
-        return;
-      }
-
-      let csv = "ID;Data;Turno;PS_Responsavel;Area;Checking_Meta;Checking_Real;FastStart_Meta;FastStart_Real;StrongFinish_Meta;StrongFinish_Real;Idle_Media;COT_Media;Score;Classificacao;Supervisor;Resumo_Ocorrencias\n";
+      let csv = "ID;Data;Turno;PS;Score\n";
       currentRecords.forEach(r => {
-        const notesEscaped = (r.notes || "").replace(/"/g, '""');
-        csv += `${r.id};${r.date};${r.shift};${r.psName || ""};${r.area || "Checking"};${r.metaOutbound || 0};${r.realOutbound || 0};${r.metaFastStart || 85};${r.realFastStart || 0};${r.metaStrongFinish || 85};${r.realStrongFinish || 0};${r.realIdle || 0};${r.realCot || 0};${r.score};${r.classification};${r.validatedBy || ""};"${notesEscaped}"\n`;
+        csv += `${r.id};${r.date};${r.shift};${r.psName};${r.score}\n`;
       });
-
-      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.setAttribute("download", `KRONOS_EXPORT_${new Date().toISOString().split('T')[0]}.csv`);
-      document.body.appendChild(link);
+      link.download = "base_kronos.csv";
       link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(link.href);
-      showToast("Exportação iniciada.");
     }
 
     function copiarResSummary() {
       const currentRecords = KronosState.getRecords();
       const active = currentRecords[currentRecords.length - 1];
-      if (!active) {
-        showToast("Nenhum fechamento ativo disponível.", "error");
-        return;
-      }
+      if (!active) return;
 
-      const text = `*👑 KRONOS — OPERATIONAL TIME INTELLIGENCE PLATFORM*
-----------------------------------------
-*Data:* ${active.date} | *Turno:* ${active.shift}
-*PS Responsável:* ${active.psName || ""}
-*Área:* ${active.area || "Checking"}
-
-*🏆 Score Ponderado de Turno:* ${active.score}% SLA [${(active.classification || "-").toUpperCase()}]
-*Validação do Supervisor:* ${active.validatedBy ? 'VALIDADO POR ' + active.validatedBy.toUpperCase() : 'PENDENTE'}
-
-*📉 Fluxo Checking & Outbound:*
-• Meta Planejada: ${active.metaOutbound || 0} THP
-• Realizado Acumulado: ${active.realOutbound || 0} THP
-
-*🛠 Indicadores de Eficiência:*
-• Fast Start: ${active.realFastStart || 0}% (Meta: ${active.metaFastStart || 85}%)
-• Strong Finish: ${active.realStrongFinish || 0}% (Meta: ${active.metaStrongFinish || 85}%)
-• Conformidade IDLE (Ociosidade): ${active.idleCompliance || 0}% (Meta: >=95%)
-• Média Atingimento COT: ${active.realCot || 0}%
-
-*📝 Resumo Geral das Ocorrências:*
-${active.notes || "Sem observações adicionais gravadas."}
-----------------------------------------`;
-
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-          showToast("Relatório de turno copiado para a área de transferência.");
-        }).catch(() => {
-          showToast("Falha de permissão no navegador para copiar o texto.", "error");
-        });
-      } else {
-        showToast("Cópia automática indisponível neste navegador.", "warning");
-      }
+      const text = `KRONOS SLA: ${active.score}% | Shift: ${active.shift} | PS: ${active.psName}`;
+      navigator.clipboard.writeText(text).then(() => showToast("Resumo copiado."));
     }
 
     function toggleConfigModal() {
       const m = document.getElementById("configModal");
-      if (!m) return;
-      m.style.display = m.style.display === "none" || m.style.display === "" ? "grid" : "none";
-      const apiInput = document.getElementById("configApiUrl");
-      if (apiInput) apiInput.value = KronosState.configApiUrl;
+      if (m) m.style.display = m.style.display === "none" ? "grid" : "none";
     }
 
     function saveApiConfig() {
-      const apiInput = document.getElementById("configApiUrl");
-      const newUrl = apiInput ? apiInput.value.trim() : "";
-      KronosState.configApiUrl = newUrl;
-      safeStorage.set("kronos_config_api_url", newUrl);
-      showToast("Configuração de ponte API de dados salva com sucesso.");
+      const url = document.getElementById("configApiUrl")?.value.trim() || "";
+      KronosState.configApiUrl = url;
+      safeStorage.set("kronos_config_api_url", url);
+      showToast("Configuração salva.");
       toggleConfigModal();
       checkApiConnection();
       syncWithGoogleSheets();
@@ -3247,197 +2837,37 @@ ${active.notes || "Sem observações adicionais gravadas."}
     function checkApiConnection() {
       const badge = document.getElementById("connectionBadge");
       if (badge) {
-        if (KronosState.configApiUrl) {
-          badge.innerText = "URL Configurada";
-          badge.style.color = "var(--color-atencao)";
-          badge.style.borderColor = "rgba(255, 235, 59, 0.2)";
-        } else {
-          badge.innerText = "Modo Local";
-          badge.style.color = "var(--color-atencao)";
-          badge.style.borderColor = "rgba(255, 235, 59, 0.2)";
-        }
+        badge.innerText = KronosState.configApiUrl ? "Modo Integrado" : "Modo Local";
       }
     }
 
     async function syncWithGoogleSheets() {
       if (KronosState.isSyncing) return;
-      const requestId = ++KronosState.syncRequestId;
       KronosState.isSyncing = true;
 
       const badge = document.getElementById("connectionBadge");
-      const syncBtn = document.getElementById("btnSyncSheets");
-      if (syncBtn) syncBtn.disabled = true;
-
       try {
         if (!KronosState.configApiUrl) {
-          if (badge) {
-            badge.innerText = "Modo Local";
-            badge.style.color = "var(--color-atencao)";
-          }
           KronosState.setRecords(readCachedRecords());
           renderAllViews();
           return;
         }
-
-        if (badge) {
-          badge.innerText = "Sincronizando...";
-          badge.style.color = "var(--color-atencao)";
-        }
-
-        const data = await callKronosApi("getData", { method: "GET" });
-        if (requestId !== KronosState.syncRequestId) return;
-
-        const records = (data && data.records) || [];
-        KronosState.setRecords(records);
-
-        if (badge) {
-          badge.innerText = "Conexão Ativa";
-          badge.style.color = "var(--color-excelente)";
-          badge.style.borderColor = "rgba(0, 230, 118, 0.2)";
-        }
-
+        if (badge) badge.innerText = "Sincronizando...";
+        const data = await callKronosApi("getData");
+        KronosState.setRecords(data.records || []);
+        if (badge) badge.innerText = "Sincronizado";
         renderAllViews();
       } catch (err) {
-        if (requestId !== KronosState.syncRequestId) return;
-        console.error("Erro de sincronização:", err);
-        showToast(`Servidor central indisponível: ${err.message}. Utilizando cache local do navegador.`, "error");
-
         KronosState.setRecords(readCachedRecords());
-
-        if (badge) {
-          badge.innerText = "Modo Offline";
-          badge.style.color = "var(--color-critico)";
-          badge.style.borderColor = "rgba(255, 23, 68, 0.2)";
-        }
-
+        if (badge) badge.innerText = "Modo Offline";
         renderAllViews();
       } finally {
-        if (requestId === KronosState.syncRequestId) {
-          KronosState.isSyncing = false;
-          if (syncBtn) syncBtn.disabled = false;
-        }
+        KronosState.isSyncing = false;
       }
     }
 
     async function sincronizacaoDireta() {
-      const btn = document.getElementById("btnDirectSync");
-
-      if (!KronosState.configApiUrl) {
-        showToast("Configure a URL do Web App antes de sincronizar.", "warning");
-        toggleConfigModal();
-        return;
-      }
-
-      if (btn) { btn.disabled = true; btn.innerText = "Sincronizando..."; }
-      showToast("Executando sincronização direta com o Apps Script...");
-
-      const diag = {
-        url: KronosState.configApiUrl,
-        timestamp: new Date().toISOString(),
-        etapa: "iniciando"
-      };
-
-      try {
-        diag.etapa = "health_check";
-        try {
-          const healthUrl = new URL(KronosState.configApiUrl);
-          healthUrl.searchParams.set("action", "health");
-          healthUrl.searchParams.set("_ts", Date.now());
-          const healthResp = await fetch(healthUrl.toString(), { method: "GET", mode: "cors", cache: "no-store" });
-          const healthText = await healthResp.text();
-          const healthPayload = JSON.parse(healthText);
-          diag.health = healthPayload && healthPayload.data;
-        } catch (healthErr) {
-          diag.healthError = healthErr.message;
-        }
-
-        diag.etapa = "montando_requisicao";
-        const testUrl = new URL(KronosState.configApiUrl);
-        testUrl.searchParams.set("action", "getData");
-        testUrl.searchParams.set("_ts", Date.now());
-
-        diag.etapa = "fetch_enviado";
-        const response = await fetch(testUrl.toString(), { method: "GET", mode: "cors", cache: "no-store" });
-        diag.httpStatus = response.status;
-        diag.httpOk = response.ok;
-        diag.contentType = response.headers.get("content-type") || "(não informado)";
-
-        const rawText = await response.text();
-        diag.tamanhoResposta = rawText.length;
-        diag.previewResposta = rawText.slice(0, 500);
-
-        let payload;
-        try {
-          payload = JSON.parse(rawText);
-          diag.etapa = "json_ok";
-        } catch (parseErr) {
-          diag.etapa = "json_parse_falhou";
-          const pareceHtml = /<html|<!DOCTYPE/i.test(rawText);
-          showDiagnosticModal(diag, pareceHtml
-            ? "O servidor respondeu com uma página HTML em vez de JSON — isso normalmente significa que a implantação do Web App não está com acesso \"Qualquer pessoa\", ou que você editou o Code.gs mas não criou uma NOVA implantação (a URL /exec antiga continua servindo a versão anterior)."
-            : "A resposta do servidor não é um JSON válido. Veja o preview bruto abaixo.");
-          throw new Error("Resposta inválida do servidor (não é JSON).");
-        }
-
-        if (!payload || payload.success !== true) {
-          diag.etapa = "api_retornou_erro";
-          diag.mensagemApi = payload && payload.message;
-          diag.erroApi = payload && payload.error;
-          showDiagnosticModal(diag, "O Apps Script respondeu, mas retornou erro: " + ((payload && (payload.message || payload.error)) || "desconhecido") + ". Confira o Code.gs (CONFIG.SPREADSHEET_ID, nome da aba REGISTROS).");
-          throw new Error((payload && payload.message) || "Erro retornado pela API.");
-        }
-
-        const records = (payload.data && payload.data.records) || [];
-        KronosState.setRecords(records);
-        renderAllViews();
-
-        const badge = document.getElementById("connectionBadge");
-        if (badge) {
-          badge.innerText = "Conexão Ativa";
-          badge.style.color = "var(--color-excelente)";
-          badge.style.borderColor = "rgba(0, 230, 118, 0.2)";
-        }
-
-        showToast(`Sincronização direta concluída: ${records.length} registro(s) carregado(s) da planilha.`);
-      } catch (err) {
-        console.error("Falha na sincronização direta:", err, diag);
-        diag.erroFinal = err.message;
-        if (diag.etapa !== "json_parse_falhou" && diag.etapa !== "api_retornou_erro") {
-          showDiagnosticModal(diag, "Falha de rede/CORS ao contatar o Apps Script. Confira: (1) a URL termina em /exec; (2) a implantação está ATIVA com acesso \"Qualquer pessoa\"; (3) você criou uma NOVA implantação (não apenas salvou) após a última alteração no Code.gs.");
-        }
-        showToast(`Sincronização direta falhou: ${err.message}`, "error");
-      } finally {
-        if (btn) { btn.disabled = false; btn.innerText = "Sincronização Direta"; }
-      }
-    }
-
-    function showDiagnosticModal(diag, hint) {
-      const modal = document.getElementById("diagModal");
-      const body = document.getElementById("diagModalBody");
-      if (!modal || !body) return;
-      const diagJson = JSON.stringify(diag, null, 2).replace(/</g, "&lt;");
-      body.innerHTML = `
-        <p style="margin-bottom:10px;"><strong>Diagnóstico:</strong> ${hint}</p>
-        <pre style="background:var(--bg-input); padding:10px; border-radius:6px; font-size:0.7rem; white-space:pre-wrap; max-height:240px; overflow:auto; border:1px solid var(--border-color);">${diagJson}</pre>
-      `;
-      modal.style.display = "grid";
-      window._kronosLastDiag = diag;
-    }
-
-    function closeDiagModal() {
-      const modal = document.getElementById("diagModal");
-      if (modal) modal.style.display = "none";
-    }
-
-    function copyDiagnostic() {
-      if (!window._kronosLastDiag) return;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(JSON.stringify(window._kronosLastDiag, null, 2)).then(() => {
-          showToast("Diagnóstico copiado para a área de transferência.");
-        }).catch(() => {
-          showToast("Falha ao copiar o diagnóstico.", "error");
-        });
-      }
+      await syncWithGoogleSheets();
     }
 
     function renderAllViews() {
@@ -3453,17 +2883,13 @@ ${active.notes || "Sem observações adicionais gravadas."}
       if (!container) return;
       const t = document.createElement("div");
       t.className = "toast";
-      if (type === "error") t.style.borderLeftColor = "var(--color-critico)";
-      else if (type === "warning") t.style.borderLeftColor = "var(--color-atencao)";
-
       t.innerText = msg;
       container.appendChild(t);
-
-      setTimeout(() => {
-        t.style.opacity = "0";
-        setTimeout(() => t.remove(), 300);
-      }, 3000);
+      setTimeout(() => t.remove(), 3000);
     }
+
+    function closeDiagModal() {}
+    function copyDiagnostic() {}
   </script>
 </body>
 </html>
